@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SourceFile>C:/Users/randy/source/repos/Rogue2/Rogue2/Content/File.spritefont</SourceFile>
+  <SourceTime>2018-12-08T11:35:46-05:00</SourceTime>
+  <DestFile>C:/Users/randy/source/repos/Rogue2/Rogue2/Content/bin/DesktopGL/Content/File.xnb</DestFile>
+  <DestTime>2020-08-17T17:48:02.2882247-04:00</DestTime>
+  <Importer>FontDescriptionImporter</Importer>
+  <ImporterTime>2020-05-27T15:15:40-04:00</ImporterTime>
+  <Processor>FontDescriptionProcessor</Processor>
+  <ProcessorTime>2020-05-27T15:15:40-04:00</ProcessorTime>
+  <Parameters>
+    <Key>PremultiplyAlpha</Key>
+    <Value>True</Value>
+  </Parameters>
+  <Parameters>
+    <Key>TextureFormat</Key>
+    <Value>Compressed</Value>
+  </Parameters>
+  <Dependencies />
+  <BuildAsset />
+  <BuildOutput />
+</PipelineBuildEvent>

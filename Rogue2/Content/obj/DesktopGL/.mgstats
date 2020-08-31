@@ -1,0 +1,9 @@
+Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
+"C:/Users/randy/source/repos/Rogue2/Rogue2/Content/Door.png","C:/Users/randy/source/repos/Rogue2/Rogue2/Content/bin/DesktopGL/Door.xnb","TextureProcessor","Texture2DContent",147,1109,0.0887393
+"C:/Users/randy/source/repos/Rogue2/Rogue2/Content/File.spritefont","C:/Users/randy/source/repos/Rogue2/Rogue2/Content/bin/DesktopGL/File.xnb","FontDescriptionProcessor","SpriteFontContent",2008,21521,0.1268386
+"C:/Users/randy/source/repos/Rogue2/Rogue2/Content/Floor.png","C:/Users/randy/source/repos/Rogue2/Rogue2/Content/bin/DesktopGL/Floor.xnb","TextureProcessor","Texture2DContent",120,1109,0.0069552
+"C:/Users/randy/source/repos/Rogue2/Rogue2/Content/Player.png","C:/Users/randy/source/repos/Rogue2/Rogue2/Content/bin/DesktopGL/Player.xnb","TextureProcessor","Texture2DContent",195,1109,0.005984
+"C:/Users/randy/source/repos/Rogue2/Rogue2/Content/Rock.png","C:/Users/randy/source/repos/Rogue2/Rogue2/Content/bin/DesktopGL/Rock.xnb","TextureProcessor","Texture2DContent",132,1109,0.0059843
+"C:/Users/randy/source/repos/Rogue2/Rogue2/Content/Sword.png","C:/Users/randy/source/repos/Rogue2/Rogue2/Content/bin/DesktopGL/Sword.xnb","TextureProcessor","Texture2DContent",147,1109,0.006981
+"C:/Users/randy/source/repos/Rogue2/Rogue2/Content/Wall.png","C:/Users/randy/source/repos/Rogue2/Rogue2/Content/bin/DesktopGL/Wall.xnb","TextureProcessor","Texture2DContent",132,1109,0.0079787
+"C:/Users/randy/source/repos/Rogue2/Rogue2/Content/Zombie.png","C:/Users/randy/source/repos/Rogue2/Rogue2/Content/bin/DesktopGL/Zombie.xnb","TextureProcessor","Texture2DContent",141,1109,0.0061994
