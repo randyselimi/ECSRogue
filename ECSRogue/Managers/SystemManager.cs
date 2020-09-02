@@ -16,8 +16,10 @@ namespace ECSRogue.Managers
         private readonly List<GameSystem> systems;
         private readonly List<GameSystem> updateSystems;
 
-        public SystemManager()
+        private readonly EntityManager entityManager;
+        public SystemManager(EntityManager entityManager)
         {
+            this.entityManager = entityManager;
             systems = new List<GameSystem>();
             inputSystems = new List<GameSystem>();
             updateSystems = new List<GameSystem>();
@@ -57,8 +59,8 @@ namespace ECSRogue.Managers
         public void OnEntityAdded(object source, EntityAddedEventArgs e)
         {
             foreach (var system in systems)
-                if (EntityFilterHelper.FilterEntity(system.entityFilter, e.entity))
-                    system.filteredEntities.Add(e.entity.ID, e.entity);
+                if (e.entity.HasComponents(system.entityFilter.ComponentsToFilter))
+                    system.filteredEntities.Add(e.entity.Id, e.entity);
         }
 
         public void OnEntityRemoved(object source, EntityRemovedEventArgs e)

@@ -10,7 +10,7 @@ namespace ECSRogue.Helpers.CollisionDetectionHelper
         //refactor to not care about components
         public bool CheckCollision(Entity collidingEntity, Entity collidedEntity)
         {
-            if (collidingEntity.ID == collidedEntity.ID) return false;
+            if (collidingEntity.Id == collidedEntity.Id) return false;
 
             Vector2 collidingEntityVelocity;
             Vector2 collidingEntityPosition;

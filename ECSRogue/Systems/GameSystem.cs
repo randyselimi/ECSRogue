@@ -19,7 +19,7 @@ namespace ECSRogue.Systems
 
         private void Add(Entity entity)
         {
-            filteredEntities.Add(entity.ID, entity);
+            filteredEntities.Add(entity.Id, entity);
         }
 
         private void Remove(int ID)
@@ -29,7 +29,7 @@ namespace ECSRogue.Systems
 
         private void Remove(Entity entity)
         {
-            Remove(entity.ID);
+            Remove(entity.Id);
         }
 
         public abstract void Update(GameTime gameTime, List<IEvent> eventQueue);

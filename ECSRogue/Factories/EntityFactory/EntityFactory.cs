@@ -1,24 +1,22 @@
 ﻿using ECSRogue.Components;
 using ECSRogue.Data;
 using ECSRogue.Managers.Entities;
+using ECSRogue.Managers;
 
 namespace ECSRogue.Factories.EntityFactory
 {
     public class EntityFactory
     {
-        private EntityTemplate entityTemplate;
-
-        public EntityFactory(EntityTemplate entityTemplate)
+        public EntityFactory()
         {
-            this.entityTemplate = entityTemplate;
         }
 
-        public Entity CreateEntity(int ID)
+        public Entity CreateEntity(EntityManager entityManager, EntityTemplate entityTemplate, int id)
         {
-            var entityToCreate = new Entity(ID);
+            var entityToCreate = new Entity(id, entityManager);
 
             foreach (var component in entityTemplate.components)
-                entityToCreate.components.Add(component.GetType(), (Component) component.Clone());
+                entityManager.CreateComponent(component, entityToCreate);
 
             return entityToCreate;
         }

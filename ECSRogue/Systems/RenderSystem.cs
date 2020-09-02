@@ -12,9 +12,6 @@ namespace ECSRogue.Systems
         public RenderSystem(RenderHandler renderHandler)
         {
             entityRenderComponent = (EntityRenderComponent) renderHandler.GetRenderComponent<EntityRenderComponent>();
-
-            entityFilter.AddComponentToFilter<Position>();
-            entityFilter.AddComponentToFilter<Sprite>();
         }
 
         private EntityRenderComponent entityRenderComponent { get; }
@@ -22,7 +19,7 @@ namespace ECSRogue.Systems
         public override void Update(GameTime gameTime, List<IEvent> eventQueue)
         {
             foreach (var entity in filteredEntities.Values)
-                if (entity.GetComponent<Sprite>().render)
+                if (entity.HasComponent<Sprite>())
                     entityRenderComponent.AddToDrawQueue(entity.GetComponent<Sprite>().texture2D,
                         Vector2.Multiply(entity.GetComponent<Position>().position,
                             entity.GetComponent<Sprite>().texture2D.Width), Color.White,

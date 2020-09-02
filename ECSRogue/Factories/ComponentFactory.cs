@@ -1,10 +1,22 @@
-﻿namespace ECSRogue.Factories
+﻿using ECSRogue.Components;
+using ECSRogue.Managers;
+using ECSRogue.Managers.Entities;
+
+namespace ECSRogue.Factories
 {
-    internal static class ComponentFactory
+    public class ComponentFactory
     {
-        //static Component CreateComponent<T>(ComponentTemplate componentTemplate) where T : Component
-        //{
-        //    return Activator.CreateInstance(typeof(componentTemplate.type);
-        //}
+
+        public ComponentFactory()
+        {
+        }
+
+        public Component CreateComponent(Component component, Entity entity)
+        {
+            Component createdComponent = (Component)component.Clone();
+            createdComponent.Id = entity.Id;
+
+            return createdComponent;
+        }
     }
 }

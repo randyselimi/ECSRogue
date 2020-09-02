@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ECSRogue.Components;
+using ECSRogue.Managers;
 using ECSRogue.Managers.Entities;
 using ECSRogue.Managers.Events;
 using ECSRogue.Managers.Levels;
@@ -11,20 +12,20 @@ namespace ECSRogue.Systems
 {
     internal class MonsterAISystem : GameSystem
     {
-        private readonly EntityManager entityManager;
+        private readonly EntityManager _entityManager;
         private readonly LevelManager levelManager;
         private readonly Pathfinder pathfinder;
         public Entity player;
 
         private MonsterAISystem()
         {
-            entityFilter.AddComponentToFilter<Position>();
+        entityFilter.AddComponentToFilter<Position>();
             entityFilter.AddComponentToFilter<MonsterAI>();
         }
 
         public MonsterAISystem(EntityManager entityManager, LevelManager levelManager) : this()
         {
-            this.entityManager = entityManager;
+            this._entityManager = entityManager;
             this.levelManager = levelManager;
             pathfinder = new Pathfinder(CalculateMonsterWeightValue);
         }
@@ -90,7 +91,7 @@ namespace ECSRogue.Systems
         {
             var position = new Vector2(x, y);
 
-            var tiles = entityManager.GetEntitiesByComponent<Position>()
+            var tiles = _entityManager.GetEntitiesByComponent<Position>()
                 .Where(x => x.GetComponent<Position>().position == position).ToList();
 
             float weight = 0;

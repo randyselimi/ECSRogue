@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using ECSRogue.Factories;
+using ECSRogue.Factories.EntityFactory;
 using ECSRogue.Managers.Entities;
 using ECSRogue.Managers.Events;
 using ECSRogue.Managers.Events.EventProcessor;
@@ -16,9 +18,9 @@ namespace ECSRogue.Managers
 
         public GameInstance(GraphicsDevice graphicsDevice, ContentManager contentManager)
         {
-            var systemManager = new SystemManager();
-            var entityManager = new EntityManager();
 
+            var entityManager = new EntityManager(new EntityFactory(), new ComponentFactory());
+            var systemManager = new SystemManager(entityManager);
             var handlerManager = new HandlerManager(systemManager, entityManager);
             var turnManager = new TurnManager(entityManager);
             var eventManager = new EventManager(new List<IEventProcessor>

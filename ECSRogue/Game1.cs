@@ -35,7 +35,7 @@ namespace ECSRogue
 
         protected override void Initialize()
         {
-            EntityPresets.Load(Content);
+            EntityTemplates.Load(Content);
             //Testing Logic
             gameInstance = new GameInstance(GraphicsDevice, Content);
             _spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -68,58 +68,58 @@ namespace ECSRogue
             gameInstance.GetManager<SystemManager>().AddUpdateSystem(new DoorSystem());
             gameInstance.GetManager<SystemManager>().AddUpdateSystem(new DamageSystem());
 
-
-            var PlayerFactory = new EntityFactory(EntityPresets.entityPresets["player"]);
+           
 
             gameInstance.GetManager<LevelManager>()
                 .GenerateLevel(new DungeonLevelFactory(gameInstance.GetManager<EntityManager>(), random));
 
             testLevel = gameInstance.GetManager<LevelManager>().GetCurrentLevel();
 
-            var MonsterFactory = new EntityFactory(EntityPresets.entityPresets["monster"]);
-
             var spawnPositions = testLevel.levelFloorTiles.Where(x => testLevel.GetTilesByPosition(x.Key) == null)
                 .ToList();
 
-            for (var i = 0; i < 12; i++)
+            for (var i = 0; i < 5; i++)
             {
-                var monster = gameInstance.GetManager<EntityManager>().CreateEntity(MonsterFactory);
+                var monster = gameInstance.GetManager<EntityManager>()
+                    .CreateEntity(EntityTemplates.entityTemplates["monster"]);
                 var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
-                monster.GetComponent<Position>().position = spawnPosition.Value.GetComponent<Position>().position;
+                monster.GetComponent<Position>().position =
+                    spawnPosition.Value.GetComponent<Position>().position;
                 spawnPositions.Remove(spawnPosition);
             }
 
-            var SwordFactory = new EntityFactory(EntityPresets.entityPresets["sword"]);
 
             for (var i = 0; i < 3; i++)
             {
-                var sword = gameInstance.GetManager<EntityManager>().CreateEntity(SwordFactory);
+                var sword = gameInstance.GetManager<EntityManager>().CreateEntity(EntityTemplates.entityTemplates["sword"]);
                 var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
-                sword.GetComponent<Position>().position = spawnPosition.Value.GetComponent<Position>().position;
+                sword.GetComponent<Position>().position =
+                    spawnPosition.Value.GetComponent<Position>().position;
                 spawnPositions.Remove(spawnPosition);
             }
 
-            var SpearFactory = new EntityFactory(EntityPresets.entityPresets["spear"]);
 
             for (var i = 0; i < 3; i++)
             {
-                var spear = gameInstance.GetManager<EntityManager>().CreateEntity(SpearFactory);
+                var spear = gameInstance.GetManager<EntityManager>().CreateEntity(EntityTemplates.entityTemplates["spear"]);
                 var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
-                spear.GetComponent<Position>().position = spawnPosition.Value.GetComponent<Position>().position;
+                spear.GetComponent<Position>().position =
+                    spawnPosition.Value.GetComponent<Position>().position;
                 spawnPositions.Remove(spawnPosition);
             }
 
-            var player = gameInstance.GetManager<EntityManager>().CreateEntity(PlayerFactory);
+            var player = gameInstance.GetManager<EntityManager>().CreateEntity(EntityTemplates.entityTemplates["player"]);
             var playerSpawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
-            player.GetComponent<Position>().position = playerSpawnPosition.Value.GetComponent<Position>().position;
+            player.GetComponent<Position>().position =
+                playerSpawnPosition.Value.GetComponent<Position>().position;
 
-            var CameraFactory = new EntityFactory(EntityPresets.entityPresets["camera"]);
 
-            gameInstance.GetManager<EntityManager>().CreateEntity(CameraFactory).GetComponent<Position>().position =
-                new Vector2(0, 0);
+            gameInstance.GetManager<EntityManager>()
+                .CreateEntity(EntityTemplates.entityTemplates["camera"]).GetComponent<Position>().position = new Vector2(0, 0);
 
-            gameInstance.GetManager<UIManager>().camera = gameInstance.GetManager<EntityManager>()
+            var camera = gameInstance.GetManager<EntityManager>()
                 .GetEntitiesByComponent<Camera>().FirstOrDefault();
+            gameInstance.GetManager<UIManager>().camera = camera;
             gameInstance.GetManager<UIManager>().player = gameInstance.GetManager<EntityManager>()
                 .GetEntitiesByComponent<Player>().FirstOrDefault();
 

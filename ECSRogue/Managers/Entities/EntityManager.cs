@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ECSRogue.Components;
+using ECSRogue.Data;
+using ECSRogue.Factories;
 using ECSRogue.Factories.EntityFactory;
 using ECSRogue.Helpers.EntityFilterHelper;
 using ECSRogue.Managers.Events;
@@ -14,41 +17,56 @@ namespace ECSRogue.Managers.Entities
 
         public delegate void EntityRemovedEventHandler(object source, EntityRemovedEventArgs args);
 
-        public EntityManager()
+        private readonly EntityFactory entityFactory;
+
+        /// <summary>
+        /// Value of componentDictionary should be store 
+        /// </summary>
+        private Dictionary<Type, Dictionary<Entity, Component>> ComponentDictionary = new Dictionary<Type, Dictionary<Entity, Component>>();
+
+        private readonly ComponentFactory componentFactory;
+        //private readonly ComponentManager _componentManager;
+        public EntityManager(EntityFactory entityFactory, ComponentFactory componentFactory)
         {
-            ID = 0;
-            entities = new Dictionary<int, Entity>();
+            this.entityFactory = entityFactory;
+            this.componentFactory = componentFactory;
+            Id = 0;
+            Entities = new Dictionary<int, Entity>();
         }
 
         //might not work
-        public Dictionary<int, Entity> entities { get; }
-        public int ID { get; private set; }
+        public Dictionary<int, Entity> Entities { get; }
+        public Dictionary<Type, Dictionary<int, Component>> Components { get; }
+        public int Id { get; private set; }
 
         public void Update(GameTime gameTime, int gameTurn, List<IEvent> eventQueue)
         {
-            foreach (var entity in entities.Values)
+            foreach (var entity in Entities.Values)
                 if (entity.alive == false)
-                    RemoveEntity(entity.ID);
+                    RemoveEntity(entity.Id);
         }
 
-        public Entity CreateEntity(EntityFactory entityFactory)
+        public Entity CreateEntity(EntityTemplate entityTemplate)
         {
-            var createdEntity = entityFactory.CreateEntity(ID++);
+            var createdEntity = entityFactory.CreateEntity(this, entityTemplate, Id++);
+            return AddEntity(createdEntity);
+        }
 
-            entities.Add(createdEntity.ID, createdEntity);
-
+        private Entity AddEntity(Entity entity)
+        {
+            Entities.Add(entity.Id, entity);
             //figure out if passing the entity is a bad idea
             var args = new EntityAddedEventArgs();
-            args.entity = createdEntity;
+            args.entity = entity;
 
             OnEntityAdded(this, args);
 
-            return createdEntity;
+            return entity;
         }
 
         public void RemoveEntity(int ID)
         {
-            if (entities.Remove(ID))
+            if (Entities.Remove(ID))
             {
                 var args = new EntityRemovedEventArgs();
                 args.ID = ID;
@@ -60,20 +78,64 @@ namespace ECSRogue.Managers.Entities
         public Entity GetEntityByID(int ID)
         {
             Entity entity = null;
-            entities.TryGetValue(ID, out entity);
+            Entities.TryGetValue(ID, out entity);
 
             return entity;
         }
 
+
+        public Dictionary<Entity, Component> GetComponents(Type t)
+        {
+            if (!ComponentDictionary.ContainsKey(t))
+            {
+                ComponentDictionary.Add(t, new Dictionary<Entity, Component>());
+            }
+
+            return ComponentDictionary[t];
+        }
+
+        public Component GetComponent(Entity entity, Type t)
+        {
+            if (GetComponents(t).ContainsKey(entity))
+            {
+                return ComponentDictionary[t][entity];
+            }
+            return null;
+        }
+
+
+        public bool HasComponent(Entity entity, Type t)
+        {
+            return GetComponent(entity, t) != null;
+        }
+
+        public bool HasComponents(Entity entity, List<Type> types)
+        {
+            bool hasComponents = true;
+            foreach (var t in types)
+            {
+                if (!HasComponent(entity, t))
+                {
+                    hasComponents = false;
+                }
+            }
+
+            return hasComponents;
+        }
+
+        public void CreateComponent(Component component, Entity entity)
+        {
+            AddComponent(componentFactory.CreateComponent(component, entity), entity);
+        }
+
+        public void AddComponent(Component component, Entity entity)
+        {
+            GetComponents(component.GetType()).Add(entity, component);
+        }
+
         public List<Entity> GetEntitiesByComponent<T>() where T : Component
         {
-            var entitiesWithComponent = new List<Entity>();
-
-            foreach (var entity in entities.Values)
-                if (EntityFilterHelper.TestComponent<T>(entity))
-                    entitiesWithComponent.Add(entity);
-
-            return entitiesWithComponent;
+            return ComponentDictionary[typeof(T)].Keys.ToList();
         }
 
         public event EntityAddedEventHandler EntityAdded;
