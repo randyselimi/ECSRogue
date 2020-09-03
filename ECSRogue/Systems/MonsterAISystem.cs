@@ -59,7 +59,7 @@ namespace ECSRogue.Systems
                     var pop = monster.GetComponent<MonsterAI>().path.Pop();
                     var movement = new Vector2(pop[0] - monsterPosition.X, pop[1] - monsterPosition.Y);
 
-                    if (monster.GetComponent<MonsterAI>().path.Count == 0)
+                    if (_entityManager.indexManager.GetIndice<Position, PositionIndex>().GetEntityByIndex(new Vector2(pop[0], pop[1])).ContainsKey(player.Id))
                     {
                         if (movement == new Vector2(0, -1))
                             eventQueue.Add(new GameEvent("Attack_Up", new List<Entity> {monster}));
@@ -74,7 +74,7 @@ namespace ECSRogue.Systems
                     else
                     {
                         if (movement == new Vector2(0, -1))
-                            eventQueue.Add(new GameEvent("Move_Up", new List<Entity> {monster}));
+                             eventQueue.Add(new GameEvent("Move_Up", new List<Entity> {monster}));
                         if (movement == new Vector2(0, 1))
                             eventQueue.Add(new GameEvent("Move_Down", new List<Entity> {monster}));
                         if (movement == new Vector2(-1, 0))
