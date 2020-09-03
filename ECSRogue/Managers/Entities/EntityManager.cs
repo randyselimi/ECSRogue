@@ -11,11 +11,16 @@ using Microsoft.Xna.Framework;
 
 namespace ECSRogue.Managers.Entities
 {
+    //TODO: This should be split up into mulitple classes
     public class EntityManager : IManager
     {
         public delegate void EntityAddedEventHandler(object source, EntityAddedEventArgs args);
 
         public delegate void EntityRemovedEventHandler(object source, EntityRemovedEventArgs args);
+
+        public delegate void ComponentAddedEventHandler(object source, ComponentAddedEventArgs args);
+
+        public delegate void ComponentRemovedEventHandler(object source, ComponentRemovedEventArgs args);
 
         private readonly EntityFactory entityFactory;
 
@@ -32,11 +37,15 @@ namespace ECSRogue.Managers.Entities
             this.componentFactory = componentFactory;
             Id = 0;
             Entities = new Dictionary<int, Entity>();
+
+            indexManager = new IndexManager();
+            ComponentAdded += indexManager.OnComponentAdded;
         }
 
         //might not work
         public Dictionary<int, Entity> Entities { get; }
         public Dictionary<Type, Dictionary<int, Component>> Components { get; }
+        public IndexManager indexManager;
         public int Id { get; private set; }
 
         public void Update(GameTime gameTime, int gameTurn, List<IEvent> eventQueue)
@@ -51,7 +60,6 @@ namespace ECSRogue.Managers.Entities
             var createdEntity = entityFactory.CreateEntity(this, entityTemplate, Id++);
             return AddEntity(createdEntity);
         }
-
         private Entity AddEntity(Entity entity)
         {
             Entities.Add(entity.Id, entity);
@@ -63,7 +71,6 @@ namespace ECSRogue.Managers.Entities
 
             return entity;
         }
-
         public void RemoveEntity(int ID)
         {
             if (Entities.Remove(ID))
@@ -74,7 +81,6 @@ namespace ECSRogue.Managers.Entities
                 OnEntityRemoved(this, args);
             }
         }
-
         public Entity GetEntityByID(int ID)
         {
             Entity entity = null;
@@ -93,7 +99,6 @@ namespace ECSRogue.Managers.Entities
 
             return ComponentDictionary[t];
         }
-
         public Component GetComponent(Entity entity, Type t)
         {
             if (GetComponents(t).ContainsKey(entity))
@@ -103,12 +108,10 @@ namespace ECSRogue.Managers.Entities
             return null;
         }
 
-
         public bool HasComponent(Entity entity, Type t)
         {
             return GetComponent(entity, t) != null;
         }
-
         public bool HasComponents(Entity entity, List<Type> types)
         {
             bool hasComponents = true;
@@ -122,15 +125,15 @@ namespace ECSRogue.Managers.Entities
 
             return hasComponents;
         }
-
         public void CreateComponent(Component component, Entity entity)
         {
             AddComponent(componentFactory.CreateComponent(component, entity), entity);
         }
-
         public void AddComponent(Component component, Entity entity)
         {
             GetComponents(component.GetType()).Add(entity, component);
+            component.ComponentUpdated += indexManager.OnComponentUpdated;
+            OnComponentAdded(this, new ComponentAddedEventArgs(component, entity));
         }
 
         public List<Entity> GetEntitiesByComponent<T>() where T : Component
@@ -141,6 +144,9 @@ namespace ECSRogue.Managers.Entities
         public event EntityAddedEventHandler EntityAdded;
         public event EntityRemovedEventHandler EntityRemoved;
 
+        public event ComponentAddedEventHandler ComponentAdded;
+        public event ComponentRemovedEventHandler ComponentRemoved;
+
         public void OnEntityAdded(object source, EntityAddedEventArgs args)
         {
             EntityAdded?.Invoke(source, args);
@@ -149,6 +155,16 @@ namespace ECSRogue.Managers.Entities
         public void OnEntityRemoved(object source, EntityRemovedEventArgs args)
         {
             EntityRemoved?.Invoke(source, args);
+        }
+
+        public void OnComponentAdded(object source, ComponentAddedEventArgs args)
+        {
+            ComponentAdded?.Invoke(source, args);
+        }
+
+        public void OnComponentRemoved(object source, ComponentRemovedEventArgs args)
+        {
+            ComponentRemoved?.Invoke(source, args);
         }
     }
 
@@ -161,5 +177,31 @@ namespace ECSRogue.Managers.Entities
     public class EntityRemovedEventArgs : EventArgs
     {
         public int ID { get; set; }
+    }
+
+    public class ComponentAddedEventArgs : EventArgs
+    {
+        public Component component { get; set; }
+
+        public Entity entity { get; set; }
+
+        public ComponentAddedEventArgs(Component component, Entity entity)
+        {
+            this.component = component;
+            this.entity = entity;
+        }
+    }
+
+    public class ComponentRemovedEventArgs : EventArgs
+    {
+        public Component component { get; set; }
+
+        public Entity entity { get; set; }
+
+        public ComponentRemovedEventArgs(Component component, Entity entity)
+        {
+            this.component = component;
+            this.entity = entity;
+        }
     }
 }

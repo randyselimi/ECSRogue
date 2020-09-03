@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Numerics;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace ECSRogue.Components
 {
@@ -8,9 +10,20 @@ namespace ECSRogue.Components
     ///     elements
     ///     Coordinate corresponds to global
     /// </summary>
-    internal class Position : Component
+    public class Position : Component
     {
-        public Vector2 position;
+        private Vector2 position1;
+
+        public Vector2 position
+        {
+            get => position1;
+
+            set
+            {
+                OnComponentUpdated(this, new ComponentUpdatedEventArgs(position1, value));
+                position1 = value;
+            }
+        }
 
         public Position()
         {

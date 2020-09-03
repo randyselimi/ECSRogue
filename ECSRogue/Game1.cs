@@ -78,7 +78,7 @@ namespace ECSRogue
             var spawnPositions = testLevel.levelFloorTiles.Where(x => testLevel.GetTilesByPosition(x.Key) == null)
                 .ToList();
 
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < 20; i++)
             {
                 var monster = gameInstance.GetManager<EntityManager>()
                     .CreateEntity(EntityTemplates.entityTemplates["monster"]);

@@ -18,10 +18,12 @@ namespace ECSRogue.Systems
         {
             foreach (var entity in filteredEntities.Values)
             {
-                if (Keyboard.GetState().IsKeyDown(Keys.Left)) entity.GetComponent<Position>().position.X += 10;
-                if (Keyboard.GetState().IsKeyDown(Keys.Right)) entity.GetComponent<Position>().position.X -= 10;
-                if (Keyboard.GetState().IsKeyDown(Keys.Up)) entity.GetComponent<Position>().position.Y += 10;
-                if (Keyboard.GetState().IsKeyDown(Keys.Down)) entity.GetComponent<Position>().position.Y -= 10;
+                var position = new Vector2();
+                if (Keyboard.GetState().IsKeyDown(Keys.Left)) position.X += 10;
+                if (Keyboard.GetState().IsKeyDown(Keys.Right)) position.X -= 10;
+                if (Keyboard.GetState().IsKeyDown(Keys.Up)) position.Y += 10;
+                if (Keyboard.GetState().IsKeyDown(Keys.Down)) position.Y -= 10;
+                entity.GetComponent<Position>().position += position;
             }
         }
     }

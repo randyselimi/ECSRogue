@@ -91,8 +91,8 @@ namespace ECSRogue.Systems
         {
             var position = new Vector2(x, y);
 
-            var tiles = _entityManager.GetEntitiesByComponent<Position>()
-                .Where(x => x.GetComponent<Position>().position == position).ToList();
+            var tiles = _entityManager.indexManager.GetIndice<Position, PositionIndex>().GetEntityByIndex(position).Values
+                .ToList();
 
             float weight = 0;
 

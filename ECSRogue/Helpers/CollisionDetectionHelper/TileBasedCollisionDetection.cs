@@ -23,7 +23,7 @@ namespace ECSRogue.Helpers.CollisionDetectionHelper
             }
             catch (Exception)
             {
-                Console.WriteLine("Entity does not have a position and velocity component");
+                Console.WriteLine("Entity does not have a Position and velocity component");
                 throw;
             }
 

@@ -5,7 +5,7 @@ using ECSRogue.Components;
 
 namespace ECSRogue.Managers.Entities
 {
-    public class Entity
+    public class Entity : IEquatable<Entity>
     {
         public bool active = true;
         public bool alive = true;
@@ -36,6 +36,32 @@ namespace ECSRogue.Managers.Entities
         public bool HasComponents(List<Type> componentList)
         {
             return _entityManager.HasComponents(this, componentList);
+        }
+
+        public bool Equals(Entity other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (this.Id == other.Id)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Entity);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id;
         }
     }
 }

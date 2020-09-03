@@ -156,7 +156,7 @@ namespace ECSRogue.Factories.LevelFactory
                     }
 
                 //Entity newDebugTile = entityManager.CreateEntity(debugTileFactory);
-                //newDebugTile.GetComponent<Position>().position = position;
+                //newDebugTile.GetComponent<Position>().Position = Position;
             }
         }
 

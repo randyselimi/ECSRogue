@@ -65,7 +65,7 @@ namespace ECSRogue.Data
                 {
                     new Turn(), new Equipment(humanoidEquipmentSlots), new Name("Test Name"), new Collideable(),
                     new Position(), new Sprite(contentManager.Load<Texture2D>("Player"), 1), new Player(),
-                    new Velocity(), new Health(20), new Inventory()
+                    new Velocity(), new Health(1000), new Inventory()
                 });
             entityTemplates.Add(entityTemplate.name, entityTemplate);
 

@@ -9,7 +9,7 @@
 //{
 //    static class PathfindingAlgorithm
 //    {
-//        public delegate int CalculateGValue(Vector2 position);
+//        public delegate int CalculateGValue(Vector2 Position);
 //        public static Stack<Vector2> GetPath(Vector2 startPosition, Vector2 endPosition, IPathfindingData pathfindingData, int maxIterations = 9999)
 //        {
 //            IPriorityQueue<Node, int> openList = new BinaryHeap<Node, int>(PriorityQueueType.Minimum);
@@ -21,17 +21,17 @@
 //                Node currentNode = openList.Dequeue();
 //                currentNode.closed = true;
 
-//                if (currentNode.position == endPosition)
+//                if (currentNode.Position == endPosition)
 //                {
 //                    break;
 //                }
 
 //                List<Vector2> adjacentPositions = new List<Vector2>()
 //                {
-//                    new Vector2(currentNode.position.X - 1, currentNode.position.Y),
-//                    new Vector2(currentNode.position.X + 1, currentNode.position.Y),
-//                    new Vector2(currentNode.position.X, currentNode.position.Y - 1),
-//                    new Vector2(currentNode.position.X, currentNode.position.Y + 1)
+//                    new Vector2(currentNode.Position.X - 1, currentNode.Position.Y),
+//                    new Vector2(currentNode.Position.X + 1, currentNode.Position.Y),
+//                    new Vector2(currentNode.Position.X, currentNode.Position.Y - 1),
+//                    new Vector2(currentNode.Position.X, currentNode.Position.Y + 1)
 //                };
 
 //                foreach (var adjacentPosition in adjacentPositions)
@@ -44,7 +44,7 @@
 //                    int gvalue = currentNode.g;
 //                    gvalue += pathfindingData.CalculateWeightValue(adjacentPosition);
 
-//                    if (!openList.Any(x => x.position == adjacentPosition))
+//                    if (!openList.Any(x => x.Position == adjacentPosition))
 //                    {
 //                        Node newNode = new Node(adjacentPosition, gvalue, GetDistance(adjacentPosition, endPosition), currentNode);
 //                        openList.Enqueue(newNode, newNode.f);
@@ -52,7 +52,7 @@
 
 //                    else
 //                    {
-//                        Node node = openList.First(x => x.position == adjacentPosition);
+//                        Node node = openList.First(x => x.Position == adjacentPosition);
 
 //                        if (gvalue + node.h < node.f)
 //                        {
@@ -68,11 +68,11 @@
 //        }
 //        private static Stack<Vector2> Traceback(Vector2 endPosition, HashSet<Node> closedList)
 //        {
-//            Node traceback = closedList.FirstOrDefault(x => x.position == endPosition);
+//            Node traceback = closedList.FirstOrDefault(x => x.Position == endPosition);
 //            Stack<Vector2> path = new Stack<Vector2>();
 //            while (traceback != null)
 //            {
-//                path.Push(traceback.position);
+//                path.Push(traceback.Position);
 //                traceback = traceback.parent;
 //            }
 
@@ -84,7 +84,7 @@
 //        }
 //        class Node
 //        {
-//            public Vector2 position;
+//            public Vector2 Position;
 
 //            public int f;
 //            public int g;
@@ -94,9 +94,9 @@
 
 //            public bool closed = false;
 
-//            public Node(Vector2 position, int g, int h, Node parent)
+//            public Node(Vector2 Position, int g, int h, Node parent)
 //            {
-//                this.position = position;
+//                this.Position = Position;
 //                this.g = g;
 //                this.h = h;
 //                this.f = g + h;
@@ -106,8 +106,8 @@
 
 //            public Node(int x, int y, int g, int h, Node parent)
 //            {
-//                this.position.X = x;
-//                this.position.Y = y;
+//                this.Position.X = x;
+//                this.Position.Y = y;
 //                this.g = g;
 //                this.h = h;
 //                this.f = g + h;
