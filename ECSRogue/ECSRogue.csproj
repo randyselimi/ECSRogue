@@ -28,9 +28,6 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1375-develop" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Entity\" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="Pathfinding">
       <HintPath>..\..\AStarPathfinding\AStarPathfinding\bin\Debug\netstandard2.0\Pathfinding.dll</HintPath>
     </Reference>

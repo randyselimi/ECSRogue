@@ -20,7 +20,7 @@ namespace ECSRogue.Components
 
             set
             {
-                OnComponentUpdated(this, new ComponentUpdatedEventArgs(position1, value));
+                OnComponentUpdated(this, new ComponentUpdatedEventArgs(position1, value, Id));
                 position1 = value;
             }
         }

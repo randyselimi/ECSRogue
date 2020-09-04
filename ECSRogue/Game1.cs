@@ -149,6 +149,12 @@ namespace ECSRogue
 
             gameInstance.Update(gameTime);
 
+            //Test
+            var test = gameInstance.GetManager<EntityManager>().indexManager;
+            var test2 = gameInstance.GetManager<EntityManager>().indexManager.GetEntitiesByIndexes(new List<IComponentIndexer>()
+                {new IsActiveIndexer(true), new TypeIndexer(typeof(MonsterAI))});
+            int x = 5;
+
 
             base.Update(gameTime);
         }

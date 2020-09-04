@@ -38,14 +38,14 @@ namespace ECSRogue.Managers.Entities
             Id = 0;
             Entities = new Dictionary<int, Entity>();
 
-            indexManager = new IndexManager();
+            indexManager = new EntityIndexManager();
             ComponentAdded += indexManager.OnComponentAdded;
         }
 
         //might not work
         public Dictionary<int, Entity> Entities { get; }
         public Dictionary<Type, Dictionary<int, Component>> Components { get; }
-        public IndexManager indexManager;
+        public EntityIndexManager indexManager;
         public int Id { get; private set; }
 
         public void Update(GameTime gameTime, int gameTurn, List<IEvent> eventQueue)

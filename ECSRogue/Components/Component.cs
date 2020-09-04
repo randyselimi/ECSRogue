@@ -21,11 +21,13 @@ namespace ECSRogue.Components
     {
         public object previous;
         public object current;
+        public int id;
 
-        public ComponentUpdatedEventArgs(object previous, object current)
+        public ComponentUpdatedEventArgs(object previous, object current, int id)
         {
             this.previous = previous;
             this.current = current;
+            this.id = id;
         }
     }
 }
