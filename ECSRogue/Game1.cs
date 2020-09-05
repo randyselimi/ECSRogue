@@ -78,7 +78,7 @@ namespace ECSRogue
             var spawnPositions = testLevel.levelFloorTiles.Where(x => testLevel.GetTilesByPosition(x.Key) == null)
                 .ToList();
 
-            for (var i = 0; i < 20; i++)
+            for (var i = 0; i < 5; i++)
             {
                 var monster = gameInstance.GetManager<EntityManager>()
                     .CreateEntity(EntityTemplates.entityTemplates["monster"]);
@@ -148,13 +148,6 @@ namespace ECSRogue
             //gameInstance.entityManager.RemoveEntity(random.Next(0, gameInstance.entityManager.ID));
 
             gameInstance.Update(gameTime);
-
-            //Test
-            var test = gameInstance.GetManager<EntityManager>().indexManager;
-            var test2 = gameInstance.GetManager<EntityManager>().indexManager.GetEntitiesByIndexes(new List<IComponentIndexer>()
-                {new IsActiveIndexer(true), new TypeIndexer(typeof(MonsterAI))});
-            int x = 5;
-
 
             base.Update(gameTime);
         }

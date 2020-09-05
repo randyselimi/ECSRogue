@@ -27,7 +27,7 @@ namespace ECSRogue.Managers.Entities
         /// <summary>
         /// Value of componentDictionary should be store 
         /// </summary>
-        private Dictionary<Type, Dictionary<Entity, Component>> ComponentDictionary = new Dictionary<Type, Dictionary<Entity, Component>>();
+        private Dictionary<Type, Dictionary<int, Component>> ComponentDictionary = new Dictionary<Type, Dictionary<int, Component>>();
 
         private readonly ComponentFactory componentFactory;
         //private readonly ComponentManager _componentManager;
@@ -40,11 +40,11 @@ namespace ECSRogue.Managers.Entities
 
             indexManager = new EntityIndexManager();
             ComponentAdded += indexManager.OnComponentAdded;
+            ComponentRemoved += indexManager.OnComponentRemoved;
         }
 
         //might not work
         public Dictionary<int, Entity> Entities { get; }
-        public Dictionary<Type, Dictionary<int, Component>> Components { get; }
         public EntityIndexManager indexManager;
         public int Id { get; private set; }
 
@@ -79,6 +79,17 @@ namespace ECSRogue.Managers.Entities
                 args.ID = ID;
 
                 OnEntityRemoved(this, args);
+
+                //TODO FIX THIS!!!
+                foreach (var component in ComponentDictionary.Values)
+                {
+                    if (component.ContainsKey(ID))
+                    {
+                        OnComponentRemoved(this, new ComponentRemovedEventArgs(component[ID], ID));
+
+                        component.Remove(ID);
+                    }
+                }
             }
         }
         public Entity GetEntityByID(int ID)
@@ -90,20 +101,20 @@ namespace ECSRogue.Managers.Entities
         }
 
 
-        public Dictionary<Entity, Component> GetComponents(Type t)
+        public Dictionary<int, Component> GetComponents(Type t)
         {
             if (!ComponentDictionary.ContainsKey(t))
             {
-                ComponentDictionary.Add(t, new Dictionary<Entity, Component>());
+                ComponentDictionary.Add(t, new Dictionary<int, Component>());
             }
 
             return ComponentDictionary[t];
         }
         public Component GetComponent(Entity entity, Type t)
         {
-            if (GetComponents(t).ContainsKey(entity))
+            if (GetComponents(t).ContainsKey(entity.Id))
             {
-                return ComponentDictionary[t][entity];
+                return ComponentDictionary[t][entity.Id];
             }
             return null;
         }
@@ -131,14 +142,14 @@ namespace ECSRogue.Managers.Entities
         }
         public void AddComponent(Component component, Entity entity)
         {
-            GetComponents(component.GetType()).Add(entity, component);
+            GetComponents(component.GetType()).Add(entity.Id, component);
             component.ComponentUpdated += indexManager.OnComponentUpdated;
             OnComponentAdded(this, new ComponentAddedEventArgs(component, entity));
         }
 
         public List<Entity> GetEntitiesByComponent<T>() where T : Component
         {
-            return ComponentDictionary[typeof(T)].Keys.ToList();
+            return indexManager.GetEntitiesByIndex(new TypeIndexer(typeof(T))).Values.ToList();
         }
 
         public event EntityAddedEventHandler EntityAdded;
@@ -196,12 +207,12 @@ namespace ECSRogue.Managers.Entities
     {
         public Component component { get; set; }
 
-        public Entity entity { get; set; }
+        public int entityId { get; set; }
 
-        public ComponentRemovedEventArgs(Component component, Entity entity)
+        public ComponentRemovedEventArgs(Component component, int entityId)
         {
             this.component = component;
-            this.entity = entity;
+            this.entityId = entityId;
         }
     }
 }

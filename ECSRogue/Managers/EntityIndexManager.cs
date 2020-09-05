@@ -150,16 +150,17 @@ namespace ECSRogue.Managers
         }
         public void OnComponentAdded(object source, ComponentAddedEventArgs args)
         {
-            var type = args.component.GetType();
-
             foreach (var entityIndex in indices.Values)
             {
                 entityIndex.OnComponentAdded(source, args);
             }
         }
-        public void OnComponentRemoved()
+        public void OnComponentRemoved(object source, ComponentRemovedEventArgs args)
         {
-
+            foreach (var entityIndex in indices.Values)
+            {
+                entityIndex.OnComponentRemoved(source, args);
+            }
         }
     }
 
@@ -199,9 +200,12 @@ namespace ECSRogue.Managers
             EntitySubIndexes[index].Add(entity.Id, entity);
         }
         //Implement Removal Behavior
-        public void RemoveEntityByIndex()
+        public void RemoveEntityByIndex(object index, int entityId)
         {
-
+            if (EntitySubIndexes.ContainsKey(index))
+            {
+                EntitySubIndexes[index].Remove(entityId);
+            }
         }
         public void SwapEntityByIndex(object previous, object current, int id)
         {
@@ -221,7 +225,7 @@ namespace ECSRogue.Managers
 
         }
         public abstract void OnComponentAdded(object source, ComponentAddedEventArgs args);
-        public abstract void OnComponentRemoved();
+        public abstract void OnComponentRemoved(object source, ComponentRemovedEventArgs args);
 
     }
 
@@ -232,9 +236,9 @@ namespace ECSRogue.Managers
             AddEntityByIndex(args.component.GetType(), args.entity);
         }
 
-        public override void OnComponentRemoved()
+        public override void OnComponentRemoved(object source, ComponentRemovedEventArgs args)
         {
-            throw new NotImplementedException();
+            RemoveEntityByIndex(args.component.GetType(), args.entityId);
         }
     }
     public class PositionIndex : EntityIndex
@@ -246,9 +250,12 @@ namespace ECSRogue.Managers
                 AddEntityByIndex((args.component as Position).position, args.entity);
             }
         }
-        public override void OnComponentRemoved()
+        public override void OnComponentRemoved(object source, ComponentRemovedEventArgs args)
         {
-            throw new System.NotImplementedException();
+            if (args.component is Position)
+            {
+                RemoveEntityByIndex((args.component as Position).position, args.entityId);
+            }
         }
     }
 
@@ -261,9 +268,12 @@ namespace ECSRogue.Managers
                 AddEntityByIndex((args.component as IsActive).isActive, args.entity);
             }
         }
-        public override void OnComponentRemoved()
+        public override void OnComponentRemoved(object source, ComponentRemovedEventArgs args)
         {
-            throw new System.NotImplementedException();
+            if (args.component is IsActive)
+            {
+                RemoveEntityByIndex((args.component as IsActive).isActive, args.entityId);
+            }
         }
     }
 }
