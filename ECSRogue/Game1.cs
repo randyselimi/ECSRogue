@@ -14,6 +14,7 @@ using ECSRogue.Managers.Entities;
 using ECSRogue.Managers.Levels;
 using ECSRogue.Systems;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace ECSRogue
@@ -35,7 +36,10 @@ namespace ECSRogue
 
         protected override void Initialize()
         {
-            EntityTemplates.Load(Content);
+            SpriteDefinitionLoader s = new SpriteDefinitionLoader(Content);
+            EntityDefinitionLoader e = new EntityDefinitionLoader(s.LoadSpriteDefinitions("s"));
+
+            e.LoadEntityDefinitions("EntityDefinitions.xml");
             //Testing Logic
             gameInstance = new GameInstance(GraphicsDevice, Content);
             _spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -53,10 +57,10 @@ namespace ECSRogue
                     new RenderSystem(gameInstance.GetManager<HandlerManager>().GetHandler<RenderHandler>()));
 
 
-            var monsterAiSystem = new MonsterAISystem(gameInstance.GetManager<EntityManager>(),
-                gameInstance.GetManager<LevelManager>());
+            //var monsterAiSystem = new MonsterAISystem(gameInstance.GetManager<EntityManager>(),
+            //    gameInstance.GetManager<LevelManager>());
 
-            gameInstance.GetManager<SystemManager>().AddInputSystem(monsterAiSystem);
+            //gameInstance.GetManager<SystemManager>().AddInputSystem(monsterAiSystem);
 
             gameInstance.GetManager<SystemManager>().AddInputSystem(new MovementSystem());
             gameInstance.GetManager<SystemManager>().AddInputSystem(new CameraInputSystem());
@@ -78,71 +82,72 @@ namespace ECSRogue
             var spawnPositions = testLevel.levelFloorTiles.Where(x => testLevel.GetTilesByPosition(x.Key) == null)
                 .ToList();
 
-            for (var i = 0; i < 5; i++)
-            {
-                var monster = gameInstance.GetManager<EntityManager>()
-                    .CreateEntity(EntityTemplates.entityTemplates["monster"]);
-                var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
-                monster.GetComponent<Position>().position =
-                    spawnPosition.Value.GetComponent<Position>().position;
-                spawnPositions.Remove(spawnPosition);
-            }
+            //for (var i = 0; i < 5; i++)
+            //{
+            //    var monster = gameInstance.GetManager<EntityManager>()
+            //        .CreateEntity("EntityTemplates.entityTempl);
+            //    var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
+            //    monster.GetComponent<Position>().position =
+            //        spawnPosition.Value.GetComponent<Position>().position;
+            //    spawnPositions.Remove(spawnPosition);
+            //}
 
 
-            for (var i = 0; i < 3; i++)
-            {
-                var sword = gameInstance.GetManager<EntityManager>().CreateEntity(EntityTemplates.entityTemplates["sword"]);
-                var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
-                sword.GetComponent<Position>().position =
-                    spawnPosition.Value.GetComponent<Position>().position;
-                spawnPositions.Remove(spawnPosition);
-            }
+            //for (var i = 0; i < 3; i++)
+            //{
+            //    var sword = gameInstance.GetManager<EntityManager>().CreateEntity(EntityTemplates.entityTemplates["sword"]);
+            //    var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
+            //    sword.GetComponent<Position>().position =
+            //        spawnPosition.Value.GetComponent<Position>().position;
+            //    spawnPositions.Remove(spawnPosition);
+            //}
 
 
-            for (var i = 0; i < 3; i++)
-            {
-                var spear = gameInstance.GetManager<EntityManager>().CreateEntity(EntityTemplates.entityTemplates["spear"]);
-                var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
-                spear.GetComponent<Position>().position =
-                    spawnPosition.Value.GetComponent<Position>().position;
-                spawnPositions.Remove(spawnPosition);
-            }
+            //for (var i = 0; i < 3; i++)
+            //{
+            //    var spear = gameInstance.GetManager<EntityManager>().CreateEntity(EntityTemplates.entityTemplates["spear"]);
+            //    var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
+            //    spear.GetComponent<Position>().position =
+            //        spawnPosition.Value.GetComponent<Position>().position;
+            //    spawnPositions.Remove(spawnPosition);
+            //}
 
-            var player = gameInstance.GetManager<EntityManager>().CreateEntity(EntityTemplates.entityTemplates["player"]);
-            var playerSpawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
-            player.GetComponent<Position>().position =
-                playerSpawnPosition.Value.GetComponent<Position>().position;
+            //var player = gameInstance.GetManager<EntityManager>().CreateEntity(EntityTemplates.entityTemplates["player"]);
+            //var playerSpawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
+            //player.GetComponent<Position>().position =
+            //    playerSpawnPosition.Value.GetComponent<Position>().position;
 
 
             gameInstance.GetManager<EntityManager>()
-                .CreateEntity(EntityTemplates.entityTemplates["camera"]).GetComponent<Position>().position = new Vector2(0, 0);
+                .CreateEntity("Camera").GetComponent<Position>().position = new Vector2(0, 0);
 
             var camera = gameInstance.GetManager<EntityManager>()
                 .GetEntitiesByComponent<Camera>().FirstOrDefault();
             gameInstance.GetManager<UIManager>().camera = camera;
-            gameInstance.GetManager<UIManager>().player = gameInstance.GetManager<EntityManager>()
-                .GetEntitiesByComponent<Player>().FirstOrDefault();
+            //gameInstance.GetManager<UIManager>().player = gameInstance.GetManager<EntityManager>()
+            //    .GetEntitiesByComponent<Player>().FirstOrDefault();
 
-            gameInstance.GetManager<UIManager>().CreateDefaultUI();
+            //gameInstance.GetManager<UIManager>().CreateDefaultUI();
 
-            monsterAiSystem.player = player;
+            //monsterAiSystem.player = player;
 
-            gameInstance.GetManager<HandlerManager>().GetHandler<InputHandler>().player =
-                gameInstance.GetManager<EntityManager>().GetEntitiesByComponent<Player>();
+            //gameInstance.GetManager<HandlerManager>().GetHandler<InputHandler>().player =
+            //    gameInstance.GetManager<EntityManager>().GetEntitiesByComponent<Player>();
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             // TODO: use this.Content to load your game content here
+
         }
 
         protected override void Update(GameTime gameTime)
         {
-            //List<Component> componentsToAdd = new List<Component> { new Position(new Vector2(random.Next(0, GraphicsDeviceManager.DefaultBackBufferWidth), random.Next(0, GraphicsDeviceManager.DefaultBackBufferHeight))), new Sprite(Content.Load<Texture2D>("Floor")) };
+            //List<Component> componentsToAdd = new List<Component> { new Position(new Vector2(random.Next(0, GraphicsDeviceManager.DefaultBackBufferWidth), random.Next(0, GraphicsDeviceManager.DefaultBackBufferHeight))), new Sprite(Content.LoadEntityDefinitions<Texture2D>("Floor")) };
             //gameInstance.entityManager.AddEntity(componentsToAdd);
 
-            //componentsToAdd = new List<Component> { new Position(new Vector2(random.Next(0, GraphicsDeviceManager.DefaultBackBufferWidth), random.Next(0, GraphicsDeviceManager.DefaultBackBufferHeight))), new Sprite(Content.Load<Texture2D>("Floor")) };
+            //componentsToAdd = new List<Component> { new Position(new Vector2(random.Next(0, GraphicsDeviceManager.DefaultBackBufferWidth), random.Next(0, GraphicsDeviceManager.DefaultBackBufferHeight))), new Sprite(Content.LoadEntityDefinitions<Texture2D>("Floor")) };
             //gameInstance.entityManager.AddEntity(componentsToAdd);
 
             //gameInstance.entityManager.RemoveEntity(random.Next(0, gameInstance.entityManager.ID));

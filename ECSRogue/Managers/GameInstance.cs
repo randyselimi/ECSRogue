@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ECSRogue.Data;
 using ECSRogue.Factories;
 using ECSRogue.Factories.EntityFactory;
 using ECSRogue.Managers.Entities;
@@ -18,8 +19,9 @@ namespace ECSRogue.Managers
 
         public GameInstance(GraphicsDevice graphicsDevice, ContentManager contentManager)
         {
+            SpriteDefinitionLoader spriteLoader = new SpriteDefinitionLoader(contentManager);
 
-            var entityManager = new EntityManager(new EntityFactory(), new ComponentFactory());
+            var entityManager = new EntityManager(new EntityFactory(), new ComponentFactory(), new EntityDefinitionManager(new EntityDefinitionLoader(spriteLoader.LoadSpriteDefinitions("base"))));
             var systemManager = new SystemManager(entityManager);
             var handlerManager = new HandlerManager(systemManager, entityManager);
             var turnManager = new TurnManager(entityManager);

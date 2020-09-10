@@ -29,12 +29,14 @@ namespace ECSRogue.Managers.Entities
         /// </summary>
         private Dictionary<Type, Dictionary<int, Component>> ComponentDictionary = new Dictionary<Type, Dictionary<int, Component>>();
 
+        private readonly EntityDefinitionManager definitionManager;
         private readonly ComponentFactory componentFactory;
         //private readonly ComponentManager _componentManager;
-        public EntityManager(EntityFactory entityFactory, ComponentFactory componentFactory)
+        public EntityManager(EntityFactory entityFactory, ComponentFactory componentFactory, EntityDefinitionManager definitionManager)
         {
             this.entityFactory = entityFactory;
             this.componentFactory = componentFactory;
+            this.definitionManager = definitionManager;
             Id = 0;
             Entities = new Dictionary<int, Entity>();
 
@@ -55,9 +57,9 @@ namespace ECSRogue.Managers.Entities
                     RemoveEntity(entity.Id);
         }
 
-        public Entity CreateEntity(EntityTemplate entityTemplate)
+        public Entity CreateEntity(string entityDefinitionId)
         {
-            var createdEntity = entityFactory.CreateEntity(this, entityTemplate, Id++);
+            var createdEntity = entityFactory.CreateEntity(this, definitionManager.GetDefinition(entityDefinitionId), Id++);
             return AddEntity(createdEntity);
         }
         private Entity AddEntity(Entity entity)

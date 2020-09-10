@@ -44,5 +44,6 @@ namespace ECSRogue.Components
             var clone = new Position(this);
             return clone;
         }
+
     }
 }

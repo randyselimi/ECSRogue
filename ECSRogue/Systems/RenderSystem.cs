@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ECSRogue.Components;
+using ECSRogue.Data;
 using ECSRogue.Handlers.Rendering;
 using ECSRogue.Handlers.Rendering.RenderComponent;
 using ECSRogue.Managers.Events;
@@ -20,10 +21,12 @@ namespace ECSRogue.Systems
         {
             foreach (var entity in filteredEntities.Values)
                 if (entity.HasComponent<Sprite>())
-                    entityRenderComponent.AddToDrawQueue(entity.GetComponent<Sprite>().texture2D,
-                        Vector2.Multiply(entity.GetComponent<Position>().position,
-                            entity.GetComponent<Sprite>().texture2D.Width), Color.White,
-                        entity.GetComponent<Sprite>().height);
+                {
+                    SpriteDefinition definition = entity.GetComponent<Sprite>().sprite;
+                    entityRenderComponent.AddToDrawQueue(definition.spriteSheet,
+                        Vector2.Multiply(entity.GetComponent<Position>().position, 35), Color.White, entity.GetComponent<Sprite>().height,
+                        definition.boundsRectangle);
+                }
         }
     }
 }

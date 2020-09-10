@@ -1,4 +1,6 @@
-﻿namespace ECSRogue.Components
+﻿using ECSRogue.Data;
+
+namespace ECSRogue.Components
 {
     internal class Carryable : Component
     {
@@ -14,5 +16,6 @@
         {
             return new Carryable(this);
         }
+
     }
 }

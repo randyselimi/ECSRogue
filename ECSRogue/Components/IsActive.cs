@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ECSRogue.Data;
 
 namespace ECSRogue.Components
 {
@@ -30,5 +31,7 @@ namespace ECSRogue.Components
         {
             return new IsActive(this);
         }
+
+
     }
 }

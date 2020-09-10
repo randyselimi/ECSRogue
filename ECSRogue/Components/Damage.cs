@@ -1,6 +1,9 @@
-﻿namespace ECSRogue.Components
+﻿using System.Collections.Generic;
+using ECSRogue.Data;
+
+namespace ECSRogue.Components
 {
-    internal class Damage : Component
+    internal class Damage : Component, IXmlParameterComponent
     {
         public int damageValue;
 
@@ -21,6 +24,16 @@
         public override object Clone()
         {
             return new Damage(this);
+        }
+        public void InitializeFromDefinition(List<ComponentData> datas)
+        {
+            foreach (var data in datas)
+            {
+                if (data.Id == "Damage")
+                {
+                    damageValue = (int)data.Data;
+                }
+            }
         }
     }
 }

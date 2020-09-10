@@ -1,22 +1,25 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using System.Collections.Generic;
+using System.Linq;
+using ECSRogue.Data;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace ECSRogue.Components
 {
-    internal class Sprite : Component
+    internal class Sprite : Component, IXmlParameterComponent, IContentComponent
     {
         public float height;
         public bool render = true;
-        public Texture2D texture2D;
+        private string spriteId;
+        public SpriteDefinition sprite;
 
-        public Sprite(Texture2D texture2D, float height)
+        public Sprite(List<ComponentData> datas)
         {
-            this.texture2D = texture2D;
-            this.height = height;
+            InitializeFromDefinition(datas);
         }
 
         public Sprite(Sprite sprite)
         {
-            texture2D = sprite.texture2D;
+            this.sprite = sprite.sprite;
             height = sprite.height;
         }
 
@@ -24,6 +27,26 @@ namespace ECSRogue.Components
         {
             var clone = new Sprite(this);
             return clone;
+        }
+        public void InitializeFromDefinition(List<ComponentData> datas)
+        {
+            foreach (ComponentData data in datas)
+            {
+                if (data.Id == "Name")
+                {
+                    spriteId = (string) data.Data;
+                }
+
+                if (data.Id == "Height")
+                {
+                    height = float.Parse((string)data.Data);
+                }
+            }
+        }
+
+        public void LoadContent(SpriteAtlas atlas)
+        {
+            sprite = atlas.GetDefinition(spriteId);
         }
     }
 }

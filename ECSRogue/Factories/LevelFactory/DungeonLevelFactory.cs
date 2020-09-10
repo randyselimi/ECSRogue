@@ -75,14 +75,14 @@ namespace ECSRogue.Factories.LevelFactory
                            || x == 0 && (y != 0 || y != roomDimensions.Y)
                            || x == roomDimensions.X && (y != 0 || y != roomDimensions.Y))
                 {
-                    var newWall = entityManager.CreateEntity(EntityTemplates.entityTemplates["wall"]);
+                    var newWall = entityManager.CreateEntity("Stone_Wall");
                     newWall.GetComponent<Position>().position = new Vector2(x + roomPosition.X, y + roomPosition.Y);
                     generatedLevel.levelTiles.Add(new Vector2(x + roomPosition.X, y + roomPosition.Y), newWall);
                 }
 
                 else
                 {
-                    var newFloor = entityManager.CreateEntity(EntityTemplates.entityTemplates["floor"]);
+                    var newFloor = entityManager.CreateEntity("Stone_Floor");
                     newFloor.GetComponent<Position>().position = new Vector2(x + roomPosition.X, y + roomPosition.Y);
                     generatedLevel.levelFloorTiles.Add(new Vector2(x + roomPosition.X, y + roomPosition.Y), newFloor);
                 }
@@ -140,7 +140,7 @@ namespace ECSRogue.Factories.LevelFactory
                 if (entities.Where(x => x != null).ToList().Count == 0)
                     if (!level.levelFloorTiles.ContainsKey(position))
                     {
-                        var newFloor = entityManager.CreateEntity(EntityTemplates.entityTemplates["floor"]);
+                        var newFloor = entityManager.CreateEntity("Stone_Floor");
                         newFloor.GetComponent<Position>().position = position;
                         level.levelFloorTiles.TryAdd(position, newFloor);
                     }
@@ -148,7 +148,7 @@ namespace ECSRogue.Factories.LevelFactory
                 foreach (var entity in entities)
                     if (entity != null && entity.HasComponent<Wall>())
                     {
-                        var newDoor = entityManager.CreateEntity(EntityTemplates.entityTemplates["door"]);
+                        var newDoor = entityManager.CreateEntity("Wooden_Door");
                         newDoor.GetComponent<Position>().position = position;
                         entityManager.RemoveEntity(entity.Id);
                         level.levelTiles.Remove(position);
@@ -169,14 +169,14 @@ namespace ECSRogue.Factories.LevelFactory
                 var position = new Vector2(x, y);
                 if (level.GetAllTilesByPosition(position).Where(x => x != null).ToList().Count == 0)
                 {
-                    var newRock = entityManager.CreateEntity(EntityTemplates.entityTemplates["rock"]);
+                    var newRock = entityManager.CreateEntity("Rock_Wall");
                     newRock.GetComponent<Position>().position = position;
                     level.levelTiles.Add(position, newRock);
                 }
 
                 if (!level.levelFloorTiles.ContainsKey(position))
                 {
-                    var newFloor = entityManager.CreateEntity(EntityTemplates.entityTemplates["floor"]);
+                    var newFloor = entityManager.CreateEntity("Stone_Floor");
                     newFloor.GetComponent<Position>().position = position;
                     level.levelFloorTiles.TryAdd(position, newFloor);
                 }

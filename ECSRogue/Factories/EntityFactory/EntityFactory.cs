@@ -11,11 +11,11 @@ namespace ECSRogue.Factories.EntityFactory
         {
         }
 
-        public Entity CreateEntity(EntityManager entityManager, EntityTemplate entityTemplate, int id)
+        public Entity CreateEntity(EntityManager entityManager, EntityDefinition entityDefinition, int id)
         {
             var entityToCreate = new Entity(id, entityManager);
 
-            foreach (var component in entityTemplate.components)
+            foreach (var component in entityDefinition.components)
                 entityManager.CreateComponent(component, entityToCreate);
 
             return entityToCreate;
