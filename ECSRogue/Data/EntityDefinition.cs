@@ -69,6 +69,11 @@ namespace ECSRogue.Data
         {
             spriteAtlas = atlas;
         }
+        /// <summary>
+        /// TODO add support for unnested component data
+        /// </summary>
+        /// <param name="entityPath"></param>
+        /// <returns></returns>
         public Dictionary<string, EntityDefinition> LoadEntityDefinitions(string entityPath)
         {
             Dictionary<string, EntityDefinition> definitions = new Dictionary<string, EntityDefinition>();
@@ -111,7 +116,7 @@ namespace ECSRogue.Data
 
             Component newComponent;
             //Checks if the component being created has parameter data that needs to be passed to its constructor
-            if (typeof(IXmlParameterComponent).IsAssignableFrom(t))
+            if (typeof(IParameterizedComponent).IsAssignableFrom(t))
             {
                 newComponent = (Component)Activator.CreateInstance(t, definition.data);
 

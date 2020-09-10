@@ -5,7 +5,7 @@ using ECSRogue.Data;
 
 namespace ECSRogue.Components
 {
-    interface IXmlParameterComponent
+    interface IParameterizedComponent
     {
         public void InitializeFromDefinition(List<ComponentData> datas);
     }

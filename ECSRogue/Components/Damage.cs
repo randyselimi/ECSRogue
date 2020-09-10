@@ -3,12 +3,13 @@ using ECSRogue.Data;
 
 namespace ECSRogue.Components
 {
-    internal class Damage : Component, IXmlParameterComponent
+    internal class Damage : Component, IParameterizedComponent
     {
         public int damageValue;
 
-        public Damage()
+        public Damage(List<ComponentData> datas)
         {
+            InitializeFromDefinition(datas);
         }
 
         public Damage(int damageValue)
@@ -31,7 +32,7 @@ namespace ECSRogue.Components
             {
                 if (data.Id == "Damage")
                 {
-                    damageValue = (int)data.Data;
+                    damageValue = int.Parse((string)data.Data);
                 }
             }
         }

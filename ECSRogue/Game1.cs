@@ -57,10 +57,10 @@ namespace ECSRogue
                     new RenderSystem(gameInstance.GetManager<HandlerManager>().GetHandler<RenderHandler>()));
 
 
-            //var monsterAiSystem = new MonsterAISystem(gameInstance.GetManager<EntityManager>(),
-            //    gameInstance.GetManager<LevelManager>());
+            var monsterAiSystem = new MonsterAISystem(gameInstance.GetManager<EntityManager>(),
+                gameInstance.GetManager<LevelManager>());
 
-            //gameInstance.GetManager<SystemManager>().AddInputSystem(monsterAiSystem);
+            gameInstance.GetManager<SystemManager>().AddInputSystem(monsterAiSystem);
 
             gameInstance.GetManager<SystemManager>().AddInputSystem(new MovementSystem());
             gameInstance.GetManager<SystemManager>().AddInputSystem(new CameraInputSystem());
@@ -82,40 +82,40 @@ namespace ECSRogue
             var spawnPositions = testLevel.levelFloorTiles.Where(x => testLevel.GetTilesByPosition(x.Key) == null)
                 .ToList();
 
-            //for (var i = 0; i < 5; i++)
-            //{
-            //    var monster = gameInstance.GetManager<EntityManager>()
-            //        .CreateEntity("EntityTemplates.entityTempl);
-            //    var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
-            //    monster.GetComponent<Position>().position =
-            //        spawnPosition.Value.GetComponent<Position>().position;
-            //    spawnPositions.Remove(spawnPosition);
-            //}
+            for (var i = 0; i < 5; i++)
+            {
+                var monster = gameInstance.GetManager<EntityManager>()
+                    .CreateEntity("Goblin_Grunt");
+                var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
+                monster.GetComponent<Position>().position =
+                    spawnPosition.Value.GetComponent<Position>().position;
+                spawnPositions.Remove(spawnPosition);
+            }
 
 
-            //for (var i = 0; i < 3; i++)
-            //{
-            //    var sword = gameInstance.GetManager<EntityManager>().CreateEntity(EntityTemplates.entityTemplates["sword"]);
-            //    var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
-            //    sword.GetComponent<Position>().position =
-            //        spawnPosition.Value.GetComponent<Position>().position;
-            //    spawnPositions.Remove(spawnPosition);
-            //}
+            for (var i = 0; i < 3; i++)
+            {
+                var sword = gameInstance.GetManager<EntityManager>().CreateEntity("Iron_Longsword");
+                var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
+                sword.GetComponent<Position>().position =
+                    spawnPosition.Value.GetComponent<Position>().position;
+                spawnPositions.Remove(spawnPosition);
+            }
 
 
-            //for (var i = 0; i < 3; i++)
-            //{
-            //    var spear = gameInstance.GetManager<EntityManager>().CreateEntity(EntityTemplates.entityTemplates["spear"]);
-            //    var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
-            //    spear.GetComponent<Position>().position =
-            //        spawnPosition.Value.GetComponent<Position>().position;
-            //    spawnPositions.Remove(spawnPosition);
-            //}
+            for (var i = 0; i < 3; i++)
+            {
+                var spear = gameInstance.GetManager<EntityManager>().CreateEntity("Wooden_Club");
+                var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
+                spear.GetComponent<Position>().position =
+                    spawnPosition.Value.GetComponent<Position>().position;
+                spawnPositions.Remove(spawnPosition);
+            }
 
-            //var player = gameInstance.GetManager<EntityManager>().CreateEntity(EntityTemplates.entityTemplates["player"]);
-            //var playerSpawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
-            //player.GetComponent<Position>().position =
-            //    playerSpawnPosition.Value.GetComponent<Position>().position;
+            var player = gameInstance.GetManager<EntityManager>().CreateEntity("Player");
+            var playerSpawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
+            player.GetComponent<Position>().position =
+                playerSpawnPosition.Value.GetComponent<Position>().position;
 
 
             gameInstance.GetManager<EntityManager>()
@@ -124,15 +124,15 @@ namespace ECSRogue
             var camera = gameInstance.GetManager<EntityManager>()
                 .GetEntitiesByComponent<Camera>().FirstOrDefault();
             gameInstance.GetManager<UIManager>().camera = camera;
-            //gameInstance.GetManager<UIManager>().player = gameInstance.GetManager<EntityManager>()
-            //    .GetEntitiesByComponent<Player>().FirstOrDefault();
+            gameInstance.GetManager<UIManager>().player = gameInstance.GetManager<EntityManager>()
+                .GetEntitiesByComponent<Player>().FirstOrDefault();
 
-            //gameInstance.GetManager<UIManager>().CreateDefaultUI();
+            gameInstance.GetManager<UIManager>().CreateDefaultUI();
 
-            //monsterAiSystem.player = player;
+            monsterAiSystem.player = player;
 
-            //gameInstance.GetManager<HandlerManager>().GetHandler<InputHandler>().player =
-            //    gameInstance.GetManager<EntityManager>().GetEntitiesByComponent<Player>();
+            gameInstance.GetManager<HandlerManager>().GetHandler<InputHandler>().player =
+                gameInstance.GetManager<EntityManager>().GetEntitiesByComponent<Player>();
             base.Initialize();
         }
 

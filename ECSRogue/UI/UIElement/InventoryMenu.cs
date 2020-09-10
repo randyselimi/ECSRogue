@@ -53,7 +53,7 @@ namespace ECSRogue.UI.UIElement
 
                 foreach (var item in entity.GetComponent<Inventory>().inventory)
                 {
-                    var itemBox = new Box(entity.GetComponent<Sprite>().sprite, new Vector2(32, 32),
+                    var itemBox = new Box(item.GetComponent<Sprite>().sprite, new Vector2(32, 32),
                         UIPosition.TopLeft);
                     var buttonToAdd = new Button(itemBox.dimensions, UIPosition.TopLeft, Color.Transparent);
                     buttonToAdd.onClick += OnButtonLeftClicked;

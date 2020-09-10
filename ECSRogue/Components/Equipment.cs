@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ECSRogue.Data;
 using ECSRogue.Managers.Entities;
 
@@ -8,14 +9,14 @@ namespace ECSRogue.Components
     ///     Represents the equipment of an Entity. Equipment are entities that have a slot that matches the owning entity and
     ///     can be equipped. Revise this!!!
     /// </summary>
-    public class Equipment : Component
+    public class Equipment : Component, IParameterizedComponent
     {
         //Slot : Entity. Entity is null if no item is equipped
         public List<EquipmentSlot> equipment = new List<EquipmentSlot>();
 
-        public Equipment(List<string> equipmentSlots)
+        public Equipment(List<ComponentData> datas)
         {
-            foreach (var slot in equipmentSlots) equipment.Add(new EquipmentSlot(slot));
+            InitializeFromDefinition(datas);
         }
 
         public Equipment(Equipment equipment)
@@ -26,6 +27,17 @@ namespace ECSRogue.Components
         public override object Clone()
         {
             return new Equipment(this);
+        }
+
+        public void InitializeFromDefinition(List<ComponentData> datas)
+        {
+            foreach (var componentData in datas)
+            {
+                if (componentData.Id == "Slot")
+                {
+                    equipment.Add(new EquipmentSlot((string)componentData.Data));
+                }
+            }
         }
     }
 

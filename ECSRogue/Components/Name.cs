@@ -3,7 +3,7 @@ using ECSRogue.Data;
 
 namespace ECSRogue.Components
 {
-    internal class Name : Component, IXmlParameterComponent
+    internal class Name : Component, IParameterizedComponent
     {
         public string NameSingular;
         public string NamePlural;

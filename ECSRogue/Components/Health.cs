@@ -4,7 +4,7 @@ using ECSRogue.Data;
 
 namespace ECSRogue.Components
 {
-    internal class Health : Component, IXmlParameterComponent
+    internal class Health : Component, IParameterizedComponent
     {
         public int healthPoints;
 
@@ -29,7 +29,7 @@ namespace ECSRogue.Components
             {
                 if (data.Id == "Hp")
                 {
-                    healthPoints = (int)data.Data;
+                    healthPoints = int.Parse((string)data.Data);
                 }
             }
         }

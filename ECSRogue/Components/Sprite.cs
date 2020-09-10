@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ECSRogue.Components
 {
-    internal class Sprite : Component, IXmlParameterComponent, IContentComponent
+    internal class Sprite : Component, IParameterizedComponent, IContentComponent
     {
         public float height;
         public bool render = true;
