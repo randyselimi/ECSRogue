@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ECSRogue.Data;
 
 namespace ECSRogue.Components
 {
@@ -18,5 +19,7 @@ namespace ECSRogue.Components
         {
             return new MonsterAI(this);
         }
+
+
     }
 }

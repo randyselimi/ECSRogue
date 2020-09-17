@@ -41,9 +41,9 @@ namespace ECSRogue.UI.UIElement
             orderedList.AddChild(equippedWeapon);
         }
 
-        public override void Update(Vector2 screenOffset, List<IEvent> eventQueue)
+        public override void Update(Vector2 screenOffset)
         {
-            base.Update(screenOffset, eventQueue);
+            base.Update(screenOffset);
             health.displayText = "HP: " + entity.GetComponent<Health>().healthPoints;
             var equipmentname = "None";
 
@@ -53,7 +53,7 @@ namespace ECSRogue.UI.UIElement
             {
                 var e = entity.GetComponent<Equipment>().equipment.Where(x => x.slot == "Wieldable").FirstOrDefault()
                     .entity;
-                equipmentname = e.GetComponent<Name>().entityName;
+                equipmentname = e.GetComponent<Name>().NameSingular;
             }
 
             equippedWeapon.displayText = "Weapon: " + equipmentname;

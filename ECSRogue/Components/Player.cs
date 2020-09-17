@@ -15,5 +15,6 @@
             var clone = new Player(this);
             return clone;
         }
+
     }
 }

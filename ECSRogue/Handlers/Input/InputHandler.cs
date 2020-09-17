@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using ECSRogue.Components;
+using ECSRogue.Managers;
 using ECSRogue.Managers.Entities;
 using ECSRogue.Managers.Events;
+using ECSRogue.Partis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace ECSRogue.Handlers.Input
 {
-    internal class InputHandler : Handler
+    internal class InputHandler
     {
         private KeyboardState currentKeyboardState;
         private MouseState currentMouseState;
@@ -14,15 +18,13 @@ namespace ECSRogue.Handlers.Input
         public Keys? modifierKey;
         //double inputDelay = 100;
 
-        public List<Entity> player = new List<Entity>();
-
         private KeyboardState previousKeyboardState;
 
         private MouseState previousMouseState;
 
         private double timeSinceLastUpdate;
 
-        private UIEvent uiEvent;
+        private UiEvent uiEvent;
 
         /// <summary>
         ///     Queries mouse and keyboard for current input state. First checks if input is a valid input for UI Layer. If so,
@@ -33,16 +35,13 @@ namespace ECSRogue.Handlers.Input
         /// </summary>
         /// <param name="gameTime"> global time variable </param>
         /// <param name="eventQueue"> global event queue </param>
-        public override void Update(GameTime gameTime, List<IEvent> eventQueue)
+        public void Update(GameTime gameTime, PartisInstance instance)
         {
+            var player = instance.GetEntitiesByIndex(new TypeIndexer(typeof(Player))).Single();
             currentMouseState = Mouse.GetState();
             currentKeyboardState = Keyboard.GetState();
 
-            eventQueue.Add(new UIEvent("Debug_Text",
-                "Previous Mouse State Is Left Click Pressed: " + (previousMouseState.LeftButton == ButtonState.Pressed),
-                "Current Mouse State Is Left Click Pressed: " + (currentMouseState.LeftButton == ButtonState.Pressed)));
-
-            uiEvent = ProcessInputUILayer(eventQueue);
+            uiEvent = ProcessInputUILayer(instance);
 
             //if there is no uiEvent (IE input not a valid ui input) or the input was not handled by the UI Layer (IE mouse click not on a button) then handle input as a game input
             if (uiEvent == null || uiEvent.handled == false)
@@ -52,25 +51,25 @@ namespace ECSRogue.Handlers.Input
                 {
                     if (currentKeyboardState.IsKeyDown(Keys.A) && previousKeyboardState.IsKeyUp(Keys.A))
                     {
-                        eventQueue.Add(new GameEvent("Move_Left", player));
+                        instance.AddEvent(new MoveEvent(player, new Vector2(-1, 0)));
                         timeSinceLastUpdate = 0;
                     }
                     else if (currentKeyboardState.IsKeyDown(Keys.D) && previousKeyboardState.IsKeyUp(Keys.D))
                     {
-                        eventQueue.Add(new GameEvent("Move_Right", player));
+                        instance.AddEvent(new MoveEvent(player, new Vector2(1, 0)));
 
                         timeSinceLastUpdate = 0;
                     }
 
                     else if (currentKeyboardState.IsKeyDown(Keys.W) && previousKeyboardState.IsKeyUp(Keys.W))
                     {
-                        eventQueue.Add(new GameEvent("Move_Up", player));
+                        instance.AddEvent(new MoveEvent(player, new Vector2(0, -1)));
 
                         timeSinceLastUpdate = 0;
                     }
                     else if (currentKeyboardState.IsKeyDown(Keys.S) && previousKeyboardState.IsKeyUp(Keys.S))
                     {
-                        eventQueue.Add(new GameEvent("Move_Down", player));
+                        instance.AddEvent(new MoveEvent(player, new Vector2(0, 1)));
 
                         timeSinceLastUpdate = 0;
                     }
@@ -78,7 +77,7 @@ namespace ECSRogue.Handlers.Input
 
                 if (currentKeyboardState.IsKeyUp(Keys.P) && previousKeyboardState.IsKeyDown(Keys.P))
                 {
-                    eventQueue.Add(new GameEvent("Pickup", player));
+                    instance.AddEvent(new PickupEvent(player));
 
                     timeSinceLastUpdate = 0;
                 }
@@ -95,14 +94,14 @@ namespace ECSRogue.Handlers.Input
                 {
                     if (currentKeyboardState.IsKeyDown(Keys.A) && previousKeyboardState.IsKeyUp(Keys.A))
                     {
-                        eventQueue.Add(new GameEvent("Attack_Left", player));
+                        instance.AddEvent(new AttackEvent(player, player.GetComponent<Position>().position + new Vector2(-1, 0)));
                         timeSinceLastUpdate = 0;
 
                         modifierKey = null;
                     }
                     else if (currentKeyboardState.IsKeyDown(Keys.D) && previousKeyboardState.IsKeyUp(Keys.D))
                     {
-                        eventQueue.Add(new GameEvent("Attack_Right", player));
+                        instance.AddEvent(new AttackEvent(player, player.GetComponent<Position>().position + new Vector2(1, 0)));
 
                         timeSinceLastUpdate = 0;
 
@@ -111,7 +110,7 @@ namespace ECSRogue.Handlers.Input
 
                     else if (currentKeyboardState.IsKeyDown(Keys.W) && previousKeyboardState.IsKeyUp(Keys.W))
                     {
-                        eventQueue.Add(new GameEvent("Attack_Up", player));
+                        instance.AddEvent(new AttackEvent(player, player.GetComponent<Position>().position + new Vector2(0, -1)));
 
                         timeSinceLastUpdate = 0;
 
@@ -119,7 +118,7 @@ namespace ECSRogue.Handlers.Input
                     }
                     else if (currentKeyboardState.IsKeyDown(Keys.S) && previousKeyboardState.IsKeyUp(Keys.S))
                     {
-                        eventQueue.Add(new GameEvent("Attack_Down", player));
+                        instance.AddEvent(new AttackEvent(player, player.GetComponent<Position>().position + new Vector2(0, 1)));
 
                         timeSinceLastUpdate = 0;
 
@@ -154,21 +153,21 @@ namespace ECSRogue.Handlers.Input
             return false;
         }
 
-        public UIEvent ProcessInputUILayer(List<IEvent> eventQueue)
+        public UiEvent ProcessInputUILayer(PartisInstance instance)
         {
-            UIEvent uiEvent = null;
+            UiEvent uiEvent = null;
 
             if (currentMouseState.LeftButton == ButtonState.Pressed &&
                 previousMouseState.LeftButton == ButtonState.Released)
-                uiEvent = new UIEvent("Left_Mouse_Button_Pressed", currentMouseState.X, currentMouseState.Y);
+                uiEvent = new UiEvent(UiEvents.LeftMouseClick, currentMouseState.X, currentMouseState.Y);
 
             else if (currentKeyboardState.IsKeyDown(Keys.I) && previousKeyboardState.IsKeyUp(Keys.I))
-                uiEvent = new UIEvent("I_Pressed");
+                uiEvent = new UiEvent(UiEvents.Inventory);
 
             else if (currentKeyboardState.IsKeyDown(Keys.Escape) && previousKeyboardState.IsKeyUp(Keys.Escape))
-                uiEvent = new UIEvent("Escape_Pressed");
+                uiEvent = new UiEvent(UiEvents.Exit);
 
-            if (uiEvent != null) eventQueue.Add(uiEvent);
+            if (uiEvent != null) instance.AddEvent(uiEvent);
 
             return uiEvent;
         }

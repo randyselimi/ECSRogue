@@ -1,4 +1,7 @@
-﻿namespace ECSRogue.Components
+﻿using System.Collections.Generic;
+using ECSRogue.Data;
+
+namespace ECSRogue.Components
 {
     internal class Floor : Component
     {

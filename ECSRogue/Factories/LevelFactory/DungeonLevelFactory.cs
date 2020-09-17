@@ -2,8 +2,10 @@
 using System.Linq;
 using ECSRogue.Components;
 using ECSRogue.Data;
+using ECSRogue.Managers;
 using ECSRogue.Managers.Entities;
 using ECSRogue.Managers.Levels;
+using ECSRogue.Partis;
 using Microsoft.Xna.Framework;
 using Pathfinding;
 
@@ -13,46 +15,29 @@ namespace ECSRogue.Factories.LevelFactory
     {
         private const int MapSize = 100;
 
-        private readonly EntityFactory.EntityFactory doorFactory =
-            new EntityFactory.EntityFactory(EntityPresets.entityPresets["door"]);
+        private readonly Random random = new Random();
 
-        private readonly EntityFactory.EntityFactory floorFactory =
-            new EntityFactory.EntityFactory(EntityPresets.entityPresets["floor"]);
-        //EntityFactory debugTileFactory = new EntityFactory(EntityPresets.entityPresets["debugtile"]);
-
-        private readonly Random random;
-
-        private readonly EntityFactory.EntityFactory rockFactory =
-            new EntityFactory.EntityFactory(EntityPresets.entityPresets["rock"]);
-
-        private readonly EntityFactory.EntityFactory wallFactory =
-            new EntityFactory.EntityFactory(EntityPresets.entityPresets["wall"]);
-
-        public DungeonLevelFactory(EntityManager entityManager, Random random)
+        public DungeonLevelFactory(Random random)
         {
-            this.entityManager = entityManager;
-            this.random = random;
         }
 
-        private EntityManager entityManager { get; }
-
-        public Level GenerateLevel(int maxWidth, int maxHeight)
+        public Level GenerateLevel(int maxWidth, int maxHeight, PartisInstance instance)
         {
             var numberOfAttempts = 10000;
             var generatedLevel = new Level(maxWidth, maxHeight);
 
             //Step one, create rooms that fall within level bounds and do not intersect other rooms
-            for (var i = 0; i < numberOfAttempts; i++) CreateRoom(generatedLevel, 10, 10);
+            for (var i = 0; i < numberOfAttempts; i++) CreateRoom(generatedLevel, 10, 10, instance);
 
-            foreach (var room in generatedLevel.levelRooms) CreateCorridor(room, generatedLevel);
+            foreach (var room in generatedLevel.levelRooms) CreateCorridor(room, generatedLevel, instance);
 
-
-            FillInLevel(generatedLevel);
+            FillInLevel(generatedLevel, instance);
+            SpawnEntities(generatedLevel, instance);
 
             return generatedLevel;
         }
 
-        public void CreateRoom(Level generatedLevel, int roomMaxWidth, int roomMaxHeight)
+        private void CreateRoom(Level generatedLevel, int roomMaxWidth, int roomMaxHeight, PartisInstance instance)
         {
             //minimum room size is 5
             if (roomMaxHeight < 5) roomMaxHeight = 5;
@@ -88,22 +73,21 @@ namespace ECSRogue.Factories.LevelFactory
                            || x == 0 && (y != 0 || y != roomDimensions.Y)
                            || x == roomDimensions.X && (y != 0 || y != roomDimensions.Y))
                 {
-                    var newWall = entityManager.CreateEntity(wallFactory);
+                    var newWall = instance.CreateEntity("Stone_Wall");
                     newWall.GetComponent<Position>().position = new Vector2(x + roomPosition.X, y + roomPosition.Y);
                     generatedLevel.levelTiles.Add(new Vector2(x + roomPosition.X, y + roomPosition.Y), newWall);
                 }
 
                 else
                 {
-                    var newFloor = entityManager.CreateEntity(floorFactory);
+                    var newFloor = instance.CreateEntity("Stone_Floor");
                     newFloor.GetComponent<Position>().position = new Vector2(x + roomPosition.X, y + roomPosition.Y);
                     generatedLevel.levelFloorTiles.Add(new Vector2(x + roomPosition.X, y + roomPosition.Y), newFloor);
                 }
 
             generatedLevel.levelRooms.Add(generatedRoom);
         }
-
-        private void CreateCorridor(Rectangle startingRoom, Level level)
+        private void CreateCorridor(Rectangle startingRoom, Level level, PartisInstance instance)
         {
             float CalculateLevelGenerationWeightValue(int x, int y)
             {
@@ -153,7 +137,7 @@ namespace ECSRogue.Factories.LevelFactory
                 if (entities.Where(x => x != null).ToList().Count == 0)
                     if (!level.levelFloorTiles.ContainsKey(position))
                     {
-                        var newFloor = entityManager.CreateEntity(floorFactory);
+                        var newFloor = instance.CreateEntity("Stone_Floor");
                         newFloor.GetComponent<Position>().position = position;
                         level.levelFloorTiles.TryAdd(position, newFloor);
                     }
@@ -161,19 +145,18 @@ namespace ECSRogue.Factories.LevelFactory
                 foreach (var entity in entities)
                     if (entity != null && entity.HasComponent<Wall>())
                     {
-                        var newDoor = entityManager.CreateEntity(doorFactory);
+                        var newDoor = instance.CreateEntity("Wooden_Door");
                         newDoor.GetComponent<Position>().position = position;
-                        entityManager.RemoveEntity(entity.ID);
+                        instance.RemoveEntity(entity.Id);
                         level.levelTiles.Remove(position);
                         level.levelTiles.Add(position, newDoor);
                     }
 
                 //Entity newDebugTile = entityManager.CreateEntity(debugTileFactory);
-                //newDebugTile.GetComponent<Position>().position = position;
+                //newDebugTile.GetComponent<Position>().Position = Position;
             }
         }
-
-        private void FillInLevel(Level level)
+        private void FillInLevel(Level level, PartisInstance instance)
         {
             //fill in void tiles
             for (var y = 0; y < level.maxHeight; y++)
@@ -182,18 +165,57 @@ namespace ECSRogue.Factories.LevelFactory
                 var position = new Vector2(x, y);
                 if (level.GetAllTilesByPosition(position).Where(x => x != null).ToList().Count == 0)
                 {
-                    var newRock = entityManager.CreateEntity(rockFactory);
+                    var newRock = instance.CreateEntity("Rock_Wall");
                     newRock.GetComponent<Position>().position = position;
                     level.levelTiles.Add(position, newRock);
                 }
 
                 if (!level.levelFloorTiles.ContainsKey(position))
                 {
-                    var newFloor = entityManager.CreateEntity(floorFactory);
+                    var newFloor = instance.CreateEntity("Stone_Floor");
                     newFloor.GetComponent<Position>().position = position;
                     level.levelFloorTiles.TryAdd(position, newFloor);
                 }
             }
+        }
+        private void SpawnEntities(Level level, PartisInstance instance)
+        {
+            var spawnPositions = level.levelFloorTiles.Where(x => level.GetTilesByPosition(x.Key) == null)
+                .ToList();
+
+            for (var i = 0; i < 5; i++)
+            {
+                var monster = instance.CreateEntity("Goblin_Grunt");
+                var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
+                monster.GetComponent<Position>().position =
+                    spawnPosition.Value.GetComponent<Position>().position;
+                spawnPositions.Remove(spawnPosition);
+            }
+
+
+            for (var i = 0; i < 3; i++)
+            {
+                var sword = instance.CreateEntity("Iron_Longsword");
+                var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
+                sword.GetComponent<Position>().position =
+                    spawnPosition.Value.GetComponent<Position>().position;
+                spawnPositions.Remove(spawnPosition);
+            }
+
+
+            for (var i = 0; i < 3; i++)
+            {
+                var spear = instance.CreateEntity("Wooden_Club");
+                var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
+                spear.GetComponent<Position>().position =
+                    spawnPosition.Value.GetComponent<Position>().position;
+                spawnPositions.Remove(spawnPosition);
+            }
+
+            var player = instance.GetEntitiesByIndex(new TypeIndexer(typeof(Player))).Single();
+            var playerSpawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
+            player.GetComponent<Position>().position =
+                playerSpawnPosition.Value.GetComponent<Position>().position;
         }
     }
 }

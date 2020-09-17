@@ -1,4 +1,7 @@
-﻿namespace ECSRogue.Components
+﻿using System.Collections.Generic;
+using ECSRogue.Data;
+
+namespace ECSRogue.Components
 {
     public class Camera : Component
     {
@@ -18,5 +21,6 @@
             var clone = new Camera(this);
             return clone;
         }
+
     }
 }
