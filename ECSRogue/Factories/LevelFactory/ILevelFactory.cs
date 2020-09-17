@@ -1,4 +1,5 @@
 ﻿using ECSRogue.Managers.Levels;
+using ECSRogue.Partis;
 
 namespace ECSRogue.Factories.LevelFactory
 {
@@ -6,6 +7,6 @@ namespace ECSRogue.Factories.LevelFactory
     {
         //Create some kind of creator to pass
 
-        Level GenerateLevel(int maxWidth, int maxHeight);
+        Level GenerateLevel(int maxWidth, int maxHeight, PartisInstance instance);
     }
 }

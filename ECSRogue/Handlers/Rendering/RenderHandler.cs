@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ECSRogue.Components;
 using ECSRogue.Handlers.Rendering.RenderComponent;
+using ECSRogue.Managers;
 using ECSRogue.Managers.Events;
+using ECSRogue.Partis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -12,24 +15,27 @@ namespace ECSRogue.Handlers.Rendering
     ///     Handles rendering of all game objects including entities and UI. Different aspects of game are drawn by
     ///     RenderComponents which are mangaged by the RenderManager
     /// </summary>
-    public class RenderHandler : Handler
+    public class RenderHandler
     {
-        private readonly Dictionary<Type, IRenderComponent> renderComponents = new Dictionary<Type, IRenderComponent>();
+        private readonly Dictionary<Type, IRenderProcessor> renderProcessors = new Dictionary<Type, IRenderProcessor>();
         private readonly SpriteBatch spriteBatch;
 
-        public RenderHandler(SpriteBatch spriteBatch, List<IRenderComponent> renderComponents)
+        public RenderHandler(SpriteBatch spriteBatch)
         {
             this.spriteBatch = spriteBatch;
-
-            foreach (var renderComponent in renderComponents)
-                this.renderComponents.Add(renderComponent.GetType(), renderComponent);
         }
 
-        private void BeginRender(SpriteSortMode spriteSortMode)
+        public void Initialize(List<IRenderProcessor> renderProcessors)
+        {
+            foreach (var renderProcessor in renderProcessors)
+                this.renderProcessors.Add(renderProcessor.GetType(), renderProcessor);
+        }
+
+        private void BeginRender(SpriteSortMode spriteSortMode, PartisInstance instance)
         {
             Matrix? translationMatrix = null;
-            foreach (var entity in entityManager.GetEntitiesByComponent<Camera>())
-                translationMatrix = Matrix.CreateTranslation(new Vector3(entity.GetComponent<Position>().position, 0));
+            var camera = instance.GetEntitiesByIndex(new TypeIndexer(typeof(Camera))).Single();
+            translationMatrix = Matrix.CreateTranslation(new Vector3(camera.GetComponent<Position>().position, 0));
 
             spriteBatch.Begin(spriteSortMode, transformMatrix: translationMatrix);
         }
@@ -44,21 +50,21 @@ namespace ECSRogue.Handlers.Rendering
             spriteBatch.GraphicsDevice.Clear(Color.Black);
         }
 
-        public override void Update(GameTime gameTime, List<IEvent> eventQueue)
+        public void Draw(GameTime gameTime, PartisInstance instance)
         {
             Clear();
 
-            foreach (var component in renderComponents)
+            foreach (var component in renderProcessors)
             {
-                BeginRender(component.Value.spriteSortMode);
+                BeginRender(component.Value.spriteSortMode, instance);
                 component.Value.Draw(spriteBatch);
                 EndRender();
             }
         }
 
-        public IRenderComponent GetRenderComponent<T>() where T : IRenderComponent
+        public T GetRenderProcessor<T>() where T : IRenderProcessor
         {
-            return renderComponents[typeof(T)];
+            return (T)renderProcessors[typeof(T)];
         }
     }
 }

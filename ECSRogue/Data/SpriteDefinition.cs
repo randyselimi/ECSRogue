@@ -40,12 +40,12 @@ namespace ECSRogue.Data
         }
     }
 
-    public class SpriteDefinitionLoader
+    public class ContentDefinitionLoader
     {
         private ContentManager manager;
         private int Sprite_Size = 35;
 
-        public SpriteDefinitionLoader(ContentManager manager)
+        public ContentDefinitionLoader(ContentManager manager)
         {
             this.manager = manager;
         }

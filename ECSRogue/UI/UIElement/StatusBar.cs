@@ -41,9 +41,9 @@ namespace ECSRogue.UI.UIElement
             orderedList.AddChild(equippedWeapon);
         }
 
-        public override void Update(Vector2 screenOffset, List<IEvent> eventQueue)
+        public override void Update(Vector2 screenOffset)
         {
-            base.Update(screenOffset, eventQueue);
+            base.Update(screenOffset);
             health.displayText = "HP: " + entity.GetComponent<Health>().healthPoints;
             var equipmentname = "None";
 

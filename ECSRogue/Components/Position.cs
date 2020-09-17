@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Numerics;
-using Vector2 = Microsoft.Xna.Framework.Vector2;
+using System.Collections.Generic;
+using ECSRogue.Data;
+using Microsoft.Xna.Framework;
 
 namespace ECSRogue.Components
 {
-    //Refactor. have a isGlobalPositionflag
-    /// <summary>
-    ///     Position component used for free-floating game objects not bound to the tile system, such as cameras and ui
-    ///     elements
-    ///     Coordinate corresponds to global
-    /// </summary>
     public class Position : Component
     {
         private Vector2 position1;
@@ -25,13 +20,9 @@ namespace ECSRogue.Components
             }
         }
 
+
         public Position()
         {
-        }
-
-        public Position(Vector2 position)
-        {
-            this.position = position;
         }
 
         public Position(Position position)
@@ -44,6 +35,5 @@ namespace ECSRogue.Components
             var clone = new Position(this);
             return clone;
         }
-
     }
 }

@@ -2,6 +2,7 @@
 using ECSRogue.Components;
 using ECSRogue.Managers.Entities;
 using ECSRogue.Managers.Events;
+using ECSRogue.Partis;
 using ECSRogue.UI.UIComponent;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -35,16 +36,16 @@ namespace ECSRogue.UI.UIElement
             baseComponent.AddChild(inventory);
         }
 
-        public void OnButtonLeftClicked(object source, UIEventArgs args)
+        public void OnButtonLeftClicked(object source, PartisInstance instance)
         {
             var clickedButton = (Button) source;
-            args.eventQueue.Add(new GameEvent("Equip", new List<Entity> {entity, items[(Box) clickedButton.parent]}));
+            instance.AddEvent(new EquipEvent(entity, items[(Box) clickedButton.parent]));
         }
 
 
-        public override void Update(Vector2 screenOffset, List<IEvent> eventQueue)
+        public override void Update(Vector2 screenOffset)
         {
-            base.Update(screenOffset, eventQueue);
+            base.Update(screenOffset);
 
             if (items.Count != entity.GetComponent<Inventory>().inventory.Count)
             {

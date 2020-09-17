@@ -14,7 +14,7 @@ namespace ECSRogue.UI.UIElement
             baseComponent.Draw(rectangleSprite, spriteBatch);
         }
 
-        public virtual void Update(Vector2 screenOffset, List<IEvent> eventQueue)
+        public virtual void Update(Vector2 screenOffset)
         {
             baseComponent.Update(screenOffset);
         }

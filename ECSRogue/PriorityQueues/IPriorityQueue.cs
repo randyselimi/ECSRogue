@@ -7,7 +7,7 @@ namespace ECSRogue.PriorityQueues
     //Peek        ||  O(1)        |   O(1)        |
     //Enqueue     ||  O(log n)    |   O(1)        |    
     //Dequeue     ||  O(log n)    |   O(log n)    |
-    //Update      ||  O(log n)    |   O(1)        |
+    //Draw      ||  O(log n)    |   O(1)        |
     //Remove      ||  O(log n)    |   O(log n)    |
 
     public interface IPriorityQueue<TItem, TPriority> : IEnumerable<TItem>
