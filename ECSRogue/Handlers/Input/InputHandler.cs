@@ -37,7 +37,7 @@ namespace ECSRogue.Handlers.Input
         /// <param name="eventQueue"> global event queue </param>
         public void Update(GameTime gameTime, PartisInstance instance)
         {
-            var player = instance.GetEntitiesByIndex(new TypeIndexer(typeof(Player))).Single();
+            var player = instance.GetEntitiesByIndex(new TypeIndexer(typeof(Player))).SingleOrDefault();
             currentMouseState = Mouse.GetState();
             currentKeyboardState = Keyboard.GetState();
 

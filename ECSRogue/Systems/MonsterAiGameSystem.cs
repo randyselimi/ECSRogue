@@ -24,7 +24,12 @@ namespace ECSRogue.Systems
         public override void Update(PartisInstance instance)
         {
             var currentLevel = levelManager.GetCurrentLevel();
-            var playerPosition = instance.GetEntitiesByIndex(new TypeIndexer(typeof(Player))).Single().GetComponent<Position>().position;
+            var playerPosition = new Vector2();
+
+            if (instance.GetEntitiesByIndex(new TypeIndexer(typeof(Player))).SingleOrDefault() != null)
+            {
+                playerPosition = instance.GetEntitiesByIndex(new TypeIndexer(typeof(Player))).SingleOrDefault().GetComponent<Position>().position;
+            }
 
             if (pathfinder == null)
             {
