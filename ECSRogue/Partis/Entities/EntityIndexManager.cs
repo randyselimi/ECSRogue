@@ -7,52 +7,10 @@ using ECSRogue.Components;
 using ECSRogue.Managers;
 using ECSRogue.Managers.Entities;
 using Microsoft.Xna.Framework;
+using Component = ECSRogue.Components.Component;
 
 namespace ECSRogue.Managers
 {
-    //TODO: Names are terrible. Must be revised.
-    //public class IndexManager
-    //{
-    //    private Dictionary<Type, ComponentIndex> indices = new Dictionary<Type, ComponentIndex>();
-
-    //    public IndexManager()
-    //    {
-    //        CreateIndice(typeof(Position), new PositionIndex());
-    //    }
-
-    //    public TValue GetIndice<TKey, TValue>() 
-    //        where TKey : Component
-    //        where TValue : ComponentIndex
-    //    {
-    //        if (!indices.ContainsKey(typeof(TKey)))
-    //        {
-
-    //        }
-    //        return (TValue)indices[typeof(TKey)];
-    //    }
-
-    //    public void CreateIndice(Type componentType, ComponentIndex indiceToAdd)
-    //    {
-    //        indices.Add(componentType, indiceToAdd);
-    //    }
-    //    public void OnComponentUpdated(object source, ComponentUpdatedEventArgs args)
-    //    {
-    //        if (indices.ContainsKey(source.GetType()))
-    //        {
-    //            indices[source.GetType()].OnComponentUpdated(source, args);
-    //        }
-    //    }
-    //    public void OnComponentAdded(object source, ComponentAddedEventArgs args)
-    //    {
-    //        Type t = args.component.GetType();
-    //        if (indices.ContainsKey(t))
-    //        {
-
-    //            indices[args.component.GetType()].OnComponentAdded(source, args);
-    //        }
-    //    }
-    //}
-
     #region Indexers
 
     public interface IComponentIndexer
@@ -83,6 +41,18 @@ namespace ECSRogue.Managers
             this.index = index;
         }
     }
+
+    public class LevelIndexer : IComponentIndexer
+    {
+        public Type key { get; set; }
+        public object index { get; set; }
+
+        public LevelIndexer(int index)
+        {
+            key = typeof(LevelPosition);
+            this.index = index;
+        }
+    }
     public class IsActiveIndexer : IComponentIndexer
     {
         public Type key { get; set; }
@@ -99,20 +69,23 @@ namespace ECSRogue.Managers
 
     public class EntityIndexManager
     {
-        private Dictionary<Type, EntityIndex> indices = new Dictionary<Type, EntityIndex>();
+        private Dictionary<Type, EntityIndex> indexes = new Dictionary<Type, EntityIndex>();
 
         public EntityIndexManager()
         {
-            CreateIndice(typeof(Position), new PositionIndex());
-            CreateIndice(typeof(Type), new TypeIndex());
-            CreateIndice(typeof(IsActive), new IsActiveIndex());
+            //Add default entityindexer of type Type
+            indexes.Add(typeof(Type), new EntityIndex());
+
+            //Use CreateIndex to create custom indexes from components that implement IIndexable
+            CreateIndex<Position>();
+            CreateIndex<IsActive>();
+            CreateIndex<LevelPosition>();
         }
 
         public EntityIndex GetEntityIndexer(IComponentIndexer indexer)
         {
-            return indices[indexer.key];
+            return indexes[indexer.key];
         }
-
         public Dictionary<int, Entity> GetEntitiesByIndex(IComponentIndexer indexer)
         {
             return GetEntityIndexer(indexer).GetEntitiesByIndex(indexer.index);
@@ -137,40 +110,48 @@ namespace ECSRogue.Managers
             return entities;
         }
 
-        public void CreateIndice(Type test, EntityIndex index)
+        public void CreateIndex<T>() where T : IIndexableComponent
         {
-            indices.Add(test, index);
+            indexes.Add(typeof(T), new EntityIndex());
         }
 
         public void OnComponentUpdated(object source, ComponentUpdatedEventArgs args)
         {
-            if (indices.ContainsKey(source.GetType()))
+            if (indexes.ContainsKey(source.GetType()))
             {
-                indices[source.GetType()].OnComponentUpdated(source, args);
+                indexes[source.GetType()].OnComponentUpdated(source, args);
             }
         }
         public void OnComponentAdded(object source, ComponentAddedEventArgs args)
         {
-            foreach (var entityIndex in indices.Values)
+            //Add every component to TypeIndex
+            indexes[typeof(Type)].OnComponentAdded(source, args);
+
+            //If the component also implements IIndexable then pass it to its respective index
+            if (args.component is IIndexableComponent indexableComponent)
             {
-                entityIndex.OnComponentAdded(source, args);
+                indexes[args.component.GetType()].OnComponentAdded(source, args);
             }
         }
         public void OnComponentRemoved(object source, ComponentRemovedEventArgs args)
         {
-            foreach (var entityIndex in indices.Values)
+            //Remove component from TypeIndex
+            indexes[typeof(Type)].OnComponentRemoved(source, args);
+
+            //If the component also implements IIndexable then remove it from its respective index
+            if (args.component is IIndexableComponent indexableComponent)
             {
-                entityIndex.OnComponentRemoved(source, args);
+                indexes[args.component.GetType()].OnComponentRemoved(source, args);
             }
         }
     }
 
 
 
-    public abstract class EntityIndex
+    public class EntityIndex
     {
-        public Type component { get; }
         public Dictionary<object, Dictionary<int, Entity>> EntitySubIndexes { get; set; } = new Dictionary<object, Dictionary<int, Entity>>();
+
         public Dictionary<int, Entity> GetEntitiesByIndex(object index)
         {
             EntitySubIndexes.TryGetValue(index, out var value);
@@ -205,7 +186,6 @@ namespace ECSRogue.Managers
 
             EntitySubIndexes[index].Add(entity.Id, entity);
         }
-        //Implement Removal Behavior
         public void RemoveEntityByIndex(object index, int entityId)
         {
             if (EntitySubIndexes.ContainsKey(index))
@@ -230,56 +210,14 @@ namespace ECSRogue.Managers
 
 
         }
-        public abstract void OnComponentAdded(object source, ComponentAddedEventArgs args);
-        public abstract void OnComponentRemoved(object source, ComponentRemovedEventArgs args);
-
-    }
-
-    public class TypeIndex : EntityIndex
-    {
-        public override void OnComponentAdded(object source, ComponentAddedEventArgs args)
+        public void OnComponentAdded(object source, ComponentAddedEventArgs args)
         {
-            AddEntityByIndex(args.component.GetType(), args.entity);
+            //This is some hacky logic. Basically if an object implements IIndexable, get its index value; otherwise, get its type for TypeIndex. Probably should split entity indexes into two types
+            AddEntityByIndex(args.component is IIndexableComponent component ? component.GetIndexValue() : args.component.GetType(), args.entity);
         }
-
-        public override void OnComponentRemoved(object source, ComponentRemovedEventArgs args)
+        public void OnComponentRemoved(object source, ComponentRemovedEventArgs args)
         {
-            RemoveEntityByIndex(args.component.GetType(), args.entityId);
-        }
-    }
-    public class PositionIndex : EntityIndex
-    {
-        public override void OnComponentAdded(object source, ComponentAddedEventArgs args)
-        {
-            if (args.component is Position)
-            {
-                AddEntityByIndex((args.component as Position).position, args.entity);
-            }
-        }
-        public override void OnComponentRemoved(object source, ComponentRemovedEventArgs args)
-        {
-            if (args.component is Position)
-            {
-                RemoveEntityByIndex((args.component as Position).position, args.entityId);
-            }
-        }
-    }
-
-    class IsActiveIndex : EntityIndex
-    {
-        public override void OnComponentAdded(object source, ComponentAddedEventArgs args)
-        {
-            if (args.component is IsActive)
-            {
-                AddEntityByIndex((args.component as IsActive).isActive, args.entity);
-            }
-        }
-        public override void OnComponentRemoved(object source, ComponentRemovedEventArgs args)
-        {
-            if (args.component is IsActive)
-            {
-                RemoveEntityByIndex((args.component as IsActive).isActive, args.entityId);
-            }
+            RemoveEntityByIndex(args.component is IIndexableComponent component ? component.GetIndexValue() : args.component.GetType(), args.entityId);
         }
     }
 }

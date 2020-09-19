@@ -1,37 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ECSRogue.Data;
 using ECSRogue.Managers;
 
 namespace ECSRogue.Components
 {
-    class IsActive : Component, IIndexableComponent
+    class LevelPosition : Component, IIndexableComponent
     {
-        private bool is_active = true;
-        public bool isActive
+        private int currentLevel;
+        public int CurrentLevel
         {
-            get => is_active;
-
+            get => currentLevel;
             set
             {
-                OnComponentUpdated(this, new ComponentUpdatedEventArgs(is_active, value, Id));
-                is_active = value;
+                OnComponentUpdated(this, new ComponentUpdatedEventArgs(currentLevel, value, Id));
+                currentLevel = value;
             }
         }
 
-        public IsActive()
+        public LevelPosition()
         {
+
         }
 
-        public IsActive(IsActive clone)
+        public LevelPosition(LevelPosition levelPosition)
         {
+            CurrentLevel = levelPosition.CurrentLevel;
         }
 
         public override object Clone()
         {
-            return new IsActive(this);
+            return new LevelPosition(this);
         }
+
         public void OnComponentUpdated(object source, ComponentUpdatedEventArgs args)
         {
             EventHandler<ComponentUpdatedEventArgs> handler = ComponentUpdated;
@@ -42,7 +43,7 @@ namespace ECSRogue.Components
         public event EventHandler<ComponentUpdatedEventArgs> ComponentUpdated;
         public object GetIndexValue()
         {
-            return isActive;
+            return currentLevel;
         }
     }
 }

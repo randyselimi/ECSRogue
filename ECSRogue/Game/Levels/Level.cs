@@ -7,7 +7,7 @@ namespace ECSRogue.Managers.Levels
 {
     public class Level
     {
-        private int ID;
+        public int Id { get; }
         public Dictionary<Vector2, Entity> levelFloorTiles = new Dictionary<Vector2, Entity>();
         public List<Rectangle> levelRooms = new List<Rectangle>();
         public Dictionary<Vector2, Entity> levelTiles = new Dictionary<Vector2, Entity>();
@@ -15,8 +15,9 @@ namespace ECSRogue.Managers.Levels
         public int maxWidth;
         public NodeMap nodeMap;
 
-        public Level(int maxWidth = 100, int maxHeight = 100)
+        public Level(int id, int maxWidth = 100, int maxHeight = 100)
         {
+            Id = id;
             this.maxWidth = maxWidth;
             this.maxHeight = maxHeight;
 

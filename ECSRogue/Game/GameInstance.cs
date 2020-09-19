@@ -76,8 +76,9 @@ namespace ECSRogue.Managers
             instance.AddSystem(new InventorySystem());
             instance.AddSystem(new DoorSystem());
             instance.AddSystem(new DamageSystem());
-            instance.AddSystem(new RenderSystem(render));
+            instance.AddSystem(new RenderSystem(render, levelManager));
             instance.AddSystem(new TurnSystem());
+            instance.AddSystem(new LevelChangeSystem(levelManager));
 
             //initialize ui
             ui.Initialize(instance, render.GetRenderProcessor<UIRenderProcessor>(),
@@ -92,7 +93,7 @@ namespace ECSRogue.Managers
 
         public void TestInstance()
         {
-            levelManager.GenerateLevel(new DungeonLevelFactory(new Random()), instance);
+            levelManager.GenerateLevel(0, new DungeonLevelFactory(new Random()), instance);
             //ui.CreateDefaultUI();
         }
 

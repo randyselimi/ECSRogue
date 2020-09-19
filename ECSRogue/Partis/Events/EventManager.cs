@@ -85,7 +85,8 @@ namespace ECSRogue.Managers.Events
         Move,
         Collide,
         Damage,
-        Equip
+        Equip,
+        LevelChange
     }
 
     public enum UiEvents
@@ -96,18 +97,19 @@ namespace ECSRogue.Managers.Events
     }
 
     /// <summary>
-    /// Defines an event in which an Entity makes an attack action on a target given by position
+    /// Defines an event in which an Entity makes an attack action on a target given by Position.
     /// </summary>
     public class AttackEvent : GameEvent
     {
-        public AttackEvent(Entity attackingEntity, Vector2 attackingPosition) : base(GameEvents.Attack)
+        public AttackEvent(Entity attackingEntity, Vector2 attackingPosition, int attackingLevel) : base(GameEvents.Attack)
         {
             AttackingEntity = attackingEntity;
             AttackingPosition = attackingPosition;
+            AttackingLevel = attackingLevel;
         }
         public Entity AttackingEntity { get; set; }
         public Vector2 AttackingPosition { get; set; }
-
+        public int AttackingLevel { get; set; }
     }
 
     /// <summary>
@@ -122,6 +124,17 @@ namespace ECSRogue.Managers.Events
         }
         public Entity DamagedEntity { get; set; }
         public int DamageAmount { get; set; }
+    }
+
+    internal class LevelChangeEvent : GameEvent
+    {
+        public LevelChangeEvent(Entity levelChangingEntity, int changeAmount) : base(GameEvents.LevelChange)
+        {
+            LevelChangingEntity = levelChangingEntity;
+            ChangeAmount = changeAmount;
+        }
+        public Entity LevelChangingEntity { get; set; }
+        public int ChangeAmount { get; set; }
     }
 
     /// <summary>

@@ -22,12 +22,12 @@ namespace ECSRogue.Systems
                 //If the entity has a velocity of zero, then it's not moving so continue
                 if (movingEntity.GetComponent<Velocity>().velocity == Vector2.Zero) continue;
 
-                //New position of moving entity will be the sum of its position and velocity vectors
+                //New Position of moving entity will be the sum of its Position and velocity vectors
                 Vector2 newPosition = Vector2.Add(
                     movingEntity.GetComponent<Position>().position, movingEntity.GetComponent<Velocity>().velocity);
 
-                //But first check if there are collideable entities at that new position
-                var collidingEntity = instance.GetEntitiesByIndexes(new PositionIndexer(newPosition), new TypeIndexer(typeof(Collideable)))
+                //But first check if there are collideable entities at that new Position
+                var collidingEntity = instance.GetEntitiesByIndexes(new LevelIndexer(movingEntity.GetComponent<LevelPosition>().CurrentLevel), new PositionIndexer(newPosition), new TypeIndexer(typeof(Collideable)))
                     .FirstOrDefault();
                 if (collidingEntity != null)
                 {

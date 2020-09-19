@@ -142,7 +142,13 @@ namespace ECSRogue.Managers.Entities
         public void AddComponent(Component component, Entity entity)
         {
             GetComponents(component.GetType()).Add(entity.Id, component);
-            component.ComponentUpdated += indexManager.OnComponentUpdated;
+
+            if (component is IIndexableComponent indexableComponent)
+            {
+                indexableComponent.ComponentUpdated += indexManager.OnComponentUpdated;
+
+            }
+
             OnComponentAdded(this, new ComponentAddedEventArgs(component, entity));
         }
 

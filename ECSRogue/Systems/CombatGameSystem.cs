@@ -25,7 +25,7 @@ namespace ECSRogue.Systems
                     var attackEvent = gameEvent as AttackEvent;
 
                     var attacker = attackEvent.AttackingEntity;
-                    var defender = instance.GetEntitiesByIndexes(new PositionIndexer(attackEvent.AttackingPosition), new TypeIndexer(typeof(Health))).Single();
+                    var defender = instance.GetEntitiesByIndexes(new PositionIndexer(attackEvent.AttackingPosition), new LevelIndexer(attackEvent.AttackingLevel), new TypeIndexer(typeof(Health))).SingleOrDefault();
 
                     if (defender != null)
                     {

@@ -3,10 +3,10 @@ using ECSRogue.Partis;
 
 namespace ECSRogue.Factories.LevelFactory
 {
-    internal interface ILevelFactory
+    public interface ILevelFactory
     {
         //Create some kind of creator to pass
 
-        Level GenerateLevel(int maxWidth, int maxHeight, PartisInstance instance);
+        Level GenerateLevel(int levelId, int maxWidth, int maxHeight, PartisInstance instance);
     }
 }

@@ -29,7 +29,7 @@ namespace ECSRogue.Systems
                     if (!pickingEntity.HasComponent<Inventory>()) continue;
 
                     var pickedEntity = instance.GetEntitiesByIndexes(new TypeIndexer(typeof(Carryable)),
-                        new PositionIndexer(pickingEntity.GetComponent<Position>().position)).FirstOrDefault();
+                        new PositionIndexer(pickingEntity.GetComponent<Position>().position), new LevelIndexer(pickingEntity.GetComponent<LevelPosition>().CurrentLevel)).FirstOrDefault();
 
                     //this should be fixed. carriables still exist in tile they were picked up in. need to be made inactive or something
                     if (pickedEntity != null)
