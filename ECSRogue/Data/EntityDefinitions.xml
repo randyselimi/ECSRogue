@@ -1,0 +1,212 @@
+<EntityDefinitions>
+	<Entity id="Stone_Wall">
+		<Base/>
+		<Tag>
+			<Wall/>
+			<Tile/>
+		</Tag>
+		<Components>
+			<Sprite>
+				<Name>Stone_Wall</Name>
+				<Height>.5</Height>
+			</Sprite>
+			<Collideable/>
+			<IsActive/>
+			<Position/>
+			<Health>
+				<Hp>6</Hp>
+			</Health>
+			<Wall/>
+			<LevelPosition/>
+			<Name>
+				<NameSingular>Stone Wall</NameSingular>
+				<NamePlural>Stone Walls</NamePlural>
+				<Description>A studry, roughly hewn wall made up of stones put together generations ago</Description>
+			</Name>
+		</Components>
+	</Entity>	
+	<Entity id="Rock_Wall">
+		<Base/>
+		<Tag>
+			<Rock/>
+			<Tile/>
+		</Tag>
+		<Components>
+			<Sprite>
+				<Name>Rock_Wall</Name>
+				<Height>.5</Height>
+			</Sprite>
+			<Collideable/>
+			<IsActive/>
+			<Position/>
+			<LevelPosition/>
+			<Health>
+				<Hp>6</Hp>
+			</Health>
+			<Wall/>
+			<Name>
+				<NameSingular>Wall of Rock</NameSingular>
+				<NamePlural>Wall of Rocks</NamePlural>
+				<Description>A chunk of some form of rocky mineral blocking passage</Description>
+			</Name>
+		</Components>	
+	</Entity>	
+	<Entity id="Stone_Floor">
+		<Tag>
+			<Floor/>
+			<Tile/>
+		</Tag>
+		<Components>
+			<Sprite>
+				<Name>Stone_Floor</Name>
+				<Height>.2</Height>
+			</Sprite>
+			<IsActive/>
+			<Floor/>
+			<Position/>
+			<LevelPosition/>
+			<Name>
+				<NameSingular>Stone Floor</NameSingular>
+				<NamePlural>Stone Floors</NamePlural>
+				<Description>A smooth ground made up of worn-down stone</Description>
+			</Name>
+		</Components>		
+	</Entity>	
+	<Entity id="Wooden_Door">
+		<Tag>
+			<Door/>
+			<Tile/>
+		</Tag>
+		<Components>
+			<Sprite>
+				<Name>Wooden_Door</Name>
+				<Height>.5</Height>
+			</Sprite>
+			<Collideable/>
+			<IsActive/>
+			<Position/>
+			<LevelPosition/>
+			<Name>
+				<NameSingular>Wooden Door</NameSingular>
+				<NamePlural>Wooden Doors</NamePlural>
+				<Description>A sturdy door constructed from wooden planks and an iron handle</Description>
+			</Name>
+			<Door/>
+		</Components>
+	</Entity>	
+	<Entity id="Camera">
+		<Tag>
+			<Camera/>
+		</Tag>
+		<Components>
+			<Position/>
+			<Camera/>
+		</Components>
+	</Entity>
+	<Entity id="Goblin_Grunt">
+		<Components>
+			<Sprite>
+				<Name>Goblin_Grunt</Name>
+				<Height>.5</Height>
+			</Sprite>
+			<Collideable/>
+			<Health>
+				<Hp>6</Hp>
+			</Health>
+			<IsActive/>
+			<Position/>
+			<LevelPosition/>
+			<Equipment>
+				<Slot>Head</Slot>
+				<Slot>Chest</Slot>
+				<Slot>Legs</Slot>
+				<Slot>Wieldable</Slot>
+			</Equipment>	
+			<Name>
+				<NameSingular>Goblin Grunt</NameSingular>
+				<NamePlural>Goblin Grunts</NamePlural>
+				<Description>A weak and diminutive creature with malice in its eyes</Description>
+			</Name>
+			<Inventory/>
+			<Velocity/>
+			<MonsterAI/>
+			<Turn/>
+		</Components>	
+	</Entity>
+	<Entity id="Player">
+		<Components>
+			<Sprite>
+				<Name>Player_Knight</Name>
+				<Height>.5</Height>
+			</Sprite>
+			<Collideable/>
+			<IsActive/>
+			<Position/>
+			<LevelPosition/>
+			<Player/>
+			<Health>
+				<Hp>20</Hp>
+			</Health>
+			<Name>
+				<NameSingular>You</NameSingular>
+				<NamePlural>You</NamePlural>
+				<Description>This is you</Description>
+			</Name>
+			<Inventory/>
+			<Equipment>
+				<Slot>Head</Slot>
+				<Slot>Chest</Slot>
+				<Slot>Legs</Slot>
+				<Slot>Wieldable</Slot>
+			</Equipment>	
+			<Velocity/>
+			<Turn/>
+		</Components>	
+	</Entity>
+	<Entity id="Iron_Longsword">
+		<Components>
+			<Sprite>
+				<Name>Iron_Longsword</Name>
+				<Height>.3</Height>
+			</Sprite>
+			<IsActive/>
+			<Carryable/>
+			<LevelPosition/>
+			<Damage>
+				<Damage>10</Damage>
+			</Damage>
+			<Slot>
+				<Slot>Wieldable</Slot>
+			</Slot>
+			<Position/>
+			<Name>
+				<NameSingular>Iron Longsword</NameSingular>
+				<NamePlural>Iron Longswords</NamePlural>
+				<Description>An iron longsword</Description>
+			</Name>
+		</Components>	
+	</Entity>
+	<Entity id="Wooden_Club">
+		<Components>
+			<Sprite>
+				<Name>Wooden_Club</Name>
+				<Height>.3</Height>
+			</Sprite>
+			<IsActive/>
+			<LevelPosition/>
+			<Carryable/>
+			<Damage>
+				<Damage>5</Damage>
+			</Damage>
+			<Slot>
+				<Slot>Wieldable</Slot>
+			</Slot>
+			<Position/>
+			<Name>
+				<NameSingular>Wooden Club</NameSingular>
+				<NamePlural>Wooden Clubs</NamePlural>
+				<Description>A wooden club</Description>
+			</Name>
+		</Components>	
+	</Entity>
+</EntityDefinitions>

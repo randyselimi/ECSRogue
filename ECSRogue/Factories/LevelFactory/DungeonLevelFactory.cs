@@ -21,12 +21,12 @@ namespace ECSRogue.Factories.LevelFactory
         {
         }
 
-        public Level GenerateLevel(int maxWidth, int maxHeight, PartisInstance instance)
+        public Level GenerateLevel(int levelId, int maxWidth, int maxHeight, PartisInstance instance)
         {
             var numberOfAttempts = 10000;
-            var generatedLevel = new Level(maxWidth, maxHeight);
+            var generatedLevel = new Level(levelId, maxWidth, maxHeight);
 
-            //Step one, create rooms that fall within level bounds and do not intersect other rooms
+            //Step one, create rooms that fall within generatedLevel bounds and do not intersect other rooms
             for (var i = 0; i < numberOfAttempts; i++) CreateRoom(generatedLevel, 10, 10, instance);
 
             foreach (var room in generatedLevel.levelRooms) CreateCorridor(room, generatedLevel, instance);
@@ -73,27 +73,29 @@ namespace ECSRogue.Factories.LevelFactory
                            || x == 0 && (y != 0 || y != roomDimensions.Y)
                            || x == roomDimensions.X && (y != 0 || y != roomDimensions.Y))
                 {
-                    var newWall = instance.CreateEntity("Stone_Wall");
-                    newWall.GetComponent<Position>().position = new Vector2(x + roomPosition.X, y + roomPosition.Y);
-                    generatedLevel.levelTiles.Add(new Vector2(x + roomPosition.X, y + roomPosition.Y), newWall);
+                    var newEntity = instance.CreateEntity("Stone_Wall");
+                    newEntity.GetComponent<Position>().position = new Vector2(x + roomPosition.X, y + roomPosition.Y);
+                    newEntity.GetComponent<LevelPosition>().CurrentLevel = generatedLevel.Id;
+                    generatedLevel.levelTiles.Add(new Vector2(x + roomPosition.X, y + roomPosition.Y), newEntity);
                 }
 
                 else
                 {
-                    var newFloor = instance.CreateEntity("Stone_Floor");
-                    newFloor.GetComponent<Position>().position = new Vector2(x + roomPosition.X, y + roomPosition.Y);
-                    generatedLevel.levelFloorTiles.Add(new Vector2(x + roomPosition.X, y + roomPosition.Y), newFloor);
+                    var newEntity = instance.CreateEntity("Stone_Floor");
+                    newEntity.GetComponent<Position>().position = new Vector2(x + roomPosition.X, y + roomPosition.Y);
+                    newEntity.GetComponent<LevelPosition>().CurrentLevel = generatedLevel.Id;
+                    generatedLevel.levelFloorTiles.Add(new Vector2(x + roomPosition.X, y + roomPosition.Y), newEntity);
                 }
 
             generatedLevel.levelRooms.Add(generatedRoom);
         }
-        private void CreateCorridor(Rectangle startingRoom, Level level, PartisInstance instance)
+        private void CreateCorridor(Rectangle startingRoom, Level generatedLevel, PartisInstance instance)
         {
             float CalculateLevelGenerationWeightValue(int x, int y)
             {
                 var position = new Vector2(x, y);
 
-                var tiles = level.GetAllTilesByPosition(position);
+                var tiles = generatedLevel.GetAllTilesByPosition(position);
 
                 float weight = 0;
 
@@ -110,7 +112,7 @@ namespace ECSRogue.Factories.LevelFactory
             }
 
             // select a random room other than the selected room to end corridor end
-            var validRooms = level.levelRooms.Where(x => x != startingRoom).ToList();
+            var validRooms = generatedLevel.levelRooms.Where(x => x != startingRoom).ToList();
 
             var roomToPathTo = validRooms[random.Next(0, validRooms.Count)];
 
@@ -125,97 +127,112 @@ namespace ECSRogue.Factories.LevelFactory
             var pathfinder = new Pathfinder(CalculateLevelGenerationWeightValue);
 
             var path = pathfinder.GetPath((int) startPosition.X, (int) startPosition.Y, (int) endPosition.X,
-                (int) endPosition.Y, level.nodeMap);
+                (int) endPosition.Y, generatedLevel.nodeMap);
 
             while (path.Count != 0)
             {
                 var pop = path.Pop();
                 var position = new Vector2(pop[0], pop[1]);
 
-                var entities = level.GetAllTilesByPosition(position);
+                var entities = generatedLevel.GetAllTilesByPosition(position);
 
                 if (entities.Where(x => x != null).ToList().Count == 0)
-                    if (!level.levelFloorTiles.ContainsKey(position))
+                    if (!generatedLevel.levelFloorTiles.ContainsKey(position))
                     {
-                        var newFloor = instance.CreateEntity("Stone_Floor");
-                        newFloor.GetComponent<Position>().position = position;
-                        level.levelFloorTiles.TryAdd(position, newFloor);
+                        var newEntity = instance.CreateEntity("Stone_Floor");
+                        newEntity.GetComponent<Position>().position = position;
+                        newEntity.GetComponent<LevelPosition>().CurrentLevel = generatedLevel.Id;
+                        generatedLevel.levelFloorTiles.TryAdd(position, newEntity);
                     }
 
                 foreach (var entity in entities)
                     if (entity != null && entity.HasComponent<Wall>())
                     {
-                        var newDoor = instance.CreateEntity("Wooden_Door");
-                        newDoor.GetComponent<Position>().position = position;
+                        var newEntity = instance.CreateEntity("Wooden_Door");
+                        newEntity.GetComponent<Position>().position = position;
+                        newEntity.GetComponent<LevelPosition>().CurrentLevel = generatedLevel.Id;
                         instance.RemoveEntity(entity.Id);
-                        level.levelTiles.Remove(position);
-                        level.levelTiles.Add(position, newDoor);
+                        generatedLevel.levelTiles.Remove(position);
+                        generatedLevel.levelTiles.Add(position, newEntity);
                     }
 
                 //Entity newDebugTile = entityManager.CreateEntity(debugTileFactory);
                 //newDebugTile.GetComponent<Position>().Position = Position;
             }
         }
-        private void FillInLevel(Level level, PartisInstance instance)
+        private void FillInLevel(Level generatedLevel, PartisInstance instance)
         {
             //fill in void tiles
-            for (var y = 0; y < level.maxHeight; y++)
-            for (var x = 0; x < level.maxWidth; x++)
+            for (var y = 0; y < generatedLevel.maxHeight; y++)
+            for (var x = 0; x < generatedLevel.maxWidth; x++)
             {
                 var position = new Vector2(x, y);
-                if (level.GetAllTilesByPosition(position).Where(x => x != null).ToList().Count == 0)
+                if (generatedLevel.GetAllTilesByPosition(position).Where(x => x != null).ToList().Count == 0)
                 {
-                    var newRock = instance.CreateEntity("Rock_Wall");
-                    newRock.GetComponent<Position>().position = position;
-                    level.levelTiles.Add(position, newRock);
+                    var newEntity = instance.CreateEntity("Rock_Wall");
+                    newEntity.GetComponent<Position>().position = position;
+                    newEntity.GetComponent<LevelPosition>().CurrentLevel = generatedLevel.Id;
+                    generatedLevel.levelTiles.Add(position, newEntity);
                 }
 
-                if (!level.levelFloorTiles.ContainsKey(position))
+                if (!generatedLevel.levelFloorTiles.ContainsKey(position))
                 {
-                    var newFloor = instance.CreateEntity("Stone_Floor");
-                    newFloor.GetComponent<Position>().position = position;
-                    level.levelFloorTiles.TryAdd(position, newFloor);
+                    var newEntity = instance.CreateEntity("Stone_Floor");
+                    newEntity.GetComponent<Position>().position = position;
+                    newEntity.GetComponent<LevelPosition>().CurrentLevel = generatedLevel.Id;
+                    generatedLevel.levelFloorTiles.TryAdd(position, newEntity);
                 }
             }
         }
-        private void SpawnEntities(Level level, PartisInstance instance)
+
+        //Temporary method to fill out generated levels
+        private void SpawnEntities(Level generatedLevel, PartisInstance instance)
         {
-            var spawnPositions = level.levelFloorTiles.Where(x => level.GetTilesByPosition(x.Key) == null)
+            var spawnPositions = generatedLevel.levelFloorTiles.Where(x => generatedLevel.GetTilesByPosition(x.Key) == null)
                 .ToList();
 
             for (var i = 0; i < 5; i++)
             {
-                var monster = instance.CreateEntity("Goblin_Grunt");
+                var newEntity = instance.CreateEntity("Goblin_Grunt");
                 var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
-                monster.GetComponent<Position>().position =
-                    spawnPosition.Value.GetComponent<Position>().position;
+                newEntity.GetComponent<Position>().position =
+                    spawnPosition.Value.GetComponent<Position>().position; 
+                newEntity.GetComponent<LevelPosition>().CurrentLevel = generatedLevel.Id;
+
                 spawnPositions.Remove(spawnPosition);
             }
 
 
             for (var i = 0; i < 3; i++)
             {
-                var sword = instance.CreateEntity("Iron_Longsword");
+                var newEntity = instance.CreateEntity("Iron_Longsword");
                 var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
-                sword.GetComponent<Position>().position =
+                newEntity.GetComponent<Position>().position =
                     spawnPosition.Value.GetComponent<Position>().position;
+                newEntity.GetComponent<LevelPosition>().CurrentLevel = generatedLevel.Id;
                 spawnPositions.Remove(spawnPosition);
             }
 
 
             for (var i = 0; i < 3; i++)
             {
-                var spear = instance.CreateEntity("Wooden_Club");
+                var newEntity = instance.CreateEntity("Wooden_Club");
                 var spawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
-                spear.GetComponent<Position>().position =
+                newEntity.GetComponent<Position>().position =
                     spawnPosition.Value.GetComponent<Position>().position;
+                newEntity.GetComponent<LevelPosition>().CurrentLevel = generatedLevel.Id;
                 spawnPositions.Remove(spawnPosition);
             }
 
             var player = instance.GetEntitiesByIndex(new TypeIndexer(typeof(Player))).Single();
-            var playerSpawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
-            player.GetComponent<Position>().position =
-                playerSpawnPosition.Value.GetComponent<Position>().position;
+            
+            if (player.GetComponent<Position>().position == Vector2.Zero)
+            {
+                var playerSpawnPosition = spawnPositions[random.Next(0, spawnPositions.Count)];
+                player.GetComponent<Position>().position =
+                    playerSpawnPosition.Value.GetComponent<Position>().position;
+                player.GetComponent<LevelPosition>().CurrentLevel = generatedLevel.Id;
+            }
         }
     }
 }

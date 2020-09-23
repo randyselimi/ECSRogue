@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using ECSRogue.Data;
 using ECSRogue.Factories;
 using ECSRogue.Factories.EntityFactory;

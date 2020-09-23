@@ -21,10 +21,7 @@ namespace ECSRogue
     public class Game1 : Game
     {
         private GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
         private GameInstance gameInstance;
-        private readonly Random random = new Random();
-        private Level testLevel;
 
         public Game1()
         {

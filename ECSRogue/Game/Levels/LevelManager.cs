@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ECSRogue.Factories.LevelFactory;
 using ECSRogue.Managers.Events;
 using ECSRogue.Partis;
@@ -6,19 +7,29 @@ using Microsoft.Xna.Framework;
 
 namespace ECSRogue.Managers.Levels
 {
-    internal class LevelManager
+    public class LevelManager
     {
-        private readonly int currentFloor = 0;
+        private int currentLevel = 0;
         public Dictionary<int, Level> levels { get; } = new Dictionary<int, Level>();
 
-        public void GenerateLevel(ILevelFactory levelFactory, PartisInstance instance)
+        public void GenerateLevel(int levelId, ILevelFactory levelFactory, PartisInstance instance)
         {
-            levels.Add(levels.Count, levelFactory.GenerateLevel(30, 30, instance));
+            levels.Add(levelId, levelFactory.GenerateLevel(levelId, 30, 30, instance));
         }
 
         public Level GetCurrentLevel()
         {
-            return levels[currentFloor];
+            return levels[currentLevel];
+        }
+
+        public void ChangeCurrentLevel(int newLevel, PartisInstance instance)
+        {
+            if (!levels.ContainsKey(newLevel))
+            {
+                GenerateLevel(newLevel, new DungeonLevelFactory(new Random()), instance);
+            }
+
+            currentLevel = newLevel;
         }
     }
 }

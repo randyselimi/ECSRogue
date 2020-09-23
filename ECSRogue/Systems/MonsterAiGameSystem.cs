@@ -24,12 +24,10 @@ namespace ECSRogue.Systems
         public override void Update(PartisInstance instance)
         {
             var currentLevel = levelManager.GetCurrentLevel();
-            var playerPosition = new Vector2();
 
-            if (instance.GetEntitiesByIndex(new TypeIndexer(typeof(Player))).SingleOrDefault() != null)
-            {
-                playerPosition = instance.GetEntitiesByIndex(new TypeIndexer(typeof(Player))).SingleOrDefault().GetComponent<Position>().position;
-            }
+            var player = instance.GetEntitiesByIndex(new TypeIndexer(typeof(Player))).Single();
+            var playerPosition = player.GetComponent<Position>().position;
+
 
             if (pathfinder == null)
             {
@@ -38,7 +36,8 @@ namespace ECSRogue.Systems
 
             foreach (var monsterEntity in instance.GetEntitiesByIndex(new TypeIndexer(typeof(MonsterAI))))
             {
-                if (monsterEntity.GetComponent<Turn>().takenTurn == false)
+                //If the monster hasn't taken its turn and is on the same level as the player, try to find a path to them
+                if (monsterEntity.GetComponent<Turn>().takenTurn == false && monsterEntity.GetComponent<LevelPosition>().CurrentLevel == currentLevel.Id)
                 {
                     var monsterPosition = monsterEntity.GetComponent<Position>().position;
                     
@@ -63,7 +62,7 @@ namespace ECSRogue.Systems
                     //Temporary but if the tile is occupied by the player, then instead of moving, send an attackEvent
                     if (instance.GetEntitiesByIndexes(new PositionIndexer(new Vector2(pop[0], pop[1])), new TypeIndexer(typeof(Player))).Count != 0)
                     {
-                        instance.AddEvent(new AttackEvent(monsterEntity, monsterEntity.GetComponent<Position>().position + movement));
+                        instance.AddEvent(new AttackEvent(monsterEntity, monsterEntity.GetComponent<Position>().position + movement, monsterEntity.GetComponent<LevelPosition>().CurrentLevel));
                     }
 
                     //Otherwise just send a moveEvent
@@ -72,19 +71,23 @@ namespace ECSRogue.Systems
                         instance.AddEvent(new MoveEvent(monsterEntity, movement));
                     }
                 }
+                else
+                {
+                    monsterEntity.GetComponent<Turn>().takenTurn = true;
+                }
             }
 
-            //Temporary implmentation
             float CalculateMonsterWeightValue(int x, int y)
             {
                 var position = new Vector2(x, y);
 
-                var tiles = instance.GetEntitiesByIndex(new PositionIndexer(position))
+                var tiles = instance.GetEntitiesByIndexes(new PositionIndexer(position), new LevelIndexer(levelManager.GetCurrentLevel().Id))
                     .ToList();
 
                 float weight = 0;
 
                 if (tiles.Exists(x => x != null && x.HasComponent<Collideable>())) weight = float.PositiveInfinity;
+                if (tiles.Exists(x => x != null && x.HasComponent<MonsterAI>())) weight = 1000;
                 if (tiles.Exists(x => x != null && x.HasComponent<Door>())) weight = 1;
 
                 return weight;

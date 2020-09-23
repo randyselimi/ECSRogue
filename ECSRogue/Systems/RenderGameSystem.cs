@@ -5,15 +5,19 @@ using ECSRogue.Handlers.Rendering;
 using ECSRogue.Handlers.Rendering.RenderComponent;
 using ECSRogue.Managers;
 using ECSRogue.Managers.Events;
+using ECSRogue.Managers.Levels;
 using ECSRogue.Partis;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace ECSRogue.Systems
 {
     public class RenderSystem : GameSystem
     {
-        public RenderSystem(RenderHandler renderHandler) : base(SystemTypes.RenderSystem)
+        private LevelManager levelManager;
+        public RenderSystem(RenderHandler renderHandler, LevelManager levelManager) : base(SystemTypes.RenderSystem)
         {
+            this.levelManager = levelManager;
             EntityRenderComponent = (EntityRenderProcessor) renderHandler.GetRenderProcessor<EntityRenderProcessor>();
         }
 
@@ -21,7 +25,7 @@ namespace ECSRogue.Systems
 
         public override void Update(PartisInstance instance)
         {
-            foreach (var entity in instance.GetEntitiesByIndex(new TypeIndexer(typeof(Sprite))))
+            foreach (var entity in instance.GetEntitiesByIndexes(new TypeIndexer(typeof(Sprite)), new LevelIndexer(levelManager.GetCurrentLevel().Id)))
             {
                 SpriteDefinition definition = entity.GetComponent<Sprite>().sprite;
 
