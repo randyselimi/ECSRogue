@@ -27,6 +27,7 @@ namespace ECSRogue.Systems
                     var attacker = attackEvent.AttackingEntity;
                     var defender = instance.GetEntitiesByIndexes(new PositionIndexer(attackEvent.AttackingPosition), new LevelIndexer(attackEvent.AttackingLevel), new TypeIndexer(typeof(Health))).SingleOrDefault();
 
+
                     if (defender != null)
                     {
                         int damage = CalculateDamageDealt(attacker);
