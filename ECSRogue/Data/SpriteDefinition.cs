@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Xml;
 using Microsoft.Xna.Framework;
@@ -54,7 +55,10 @@ namespace ECSRogue.Data
         {
 
             XmlDocument document = new XmlDocument();
-            document.Load("SpriteDefinitions.xml");
+
+            //Temporary
+            string filepath = System.IO.Path.GetFullPath(@"..\..\..\Data");
+            document.Load(Path.Combine(filepath, "SpriteDefinitions.xml"));
 
             SpriteAtlas atlas = new SpriteAtlas();
 

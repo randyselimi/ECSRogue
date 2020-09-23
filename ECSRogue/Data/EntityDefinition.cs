@@ -88,7 +88,10 @@ namespace ECSRogue.Data
         {
             Dictionary<string, EntityDefinition> definitions = new Dictionary<string, EntityDefinition>();
             XmlDocument document = new XmlDocument();
-            document.Load("EntityDefinitions.xml");
+
+            //Temporary
+            string filepath = System.IO.Path.GetFullPath(@"..\..\..\Data");
+            document.Load(Path.Combine(filepath, "EntityDefinitions.xml"));
 
             XmlNode root = document.DocumentElement;
             XmlNodeList entityList = root.SelectNodes("/EntityDefinitions/Entity");
