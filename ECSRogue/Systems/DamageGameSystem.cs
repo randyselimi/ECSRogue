@@ -24,10 +24,14 @@ namespace ECSRogue.Systems
                     var damagedEntity = damageEvent.DamagedEntity;
 
                     damagedEntity.GetComponent<Health>().healthPoints -= (int)damageEvent.DamageAmount;
+                    instance.AddEvent(new LogEvent(damagedEntity.GetComponent<Name>().NameSingular + " takes " + damageEvent.DamageAmount + " points of damage"));
 
                     //TODO this should be moved into its own system!
-                    if (damagedEntity.GetComponent<Health>().healthPoints <= 0) damagedEntity.alive = false;
-                    
+                    if (damagedEntity.GetComponent<Health>().healthPoints <= 0)
+                    {
+                        damagedEntity.alive = false;
+                        instance.AddEvent(new LogEvent(damagedEntity.GetComponent<Name>().NameSingular + " dies!"));
+                    }
                 }
             }
 

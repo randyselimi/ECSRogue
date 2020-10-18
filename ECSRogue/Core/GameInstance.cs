@@ -22,12 +22,13 @@ namespace ECSRogue.Managers
 {
     public class GameInstance
     {
-        private PartisInstance instance;
+        public PartisInstance partisInstance;
         private InputHandler input;
         private RenderHandler render;
         private UIHandler ui;
 
         private LevelManager levelManager;
+        public LogManager logManager;
 
         private GraphicsDevice graphicsDevice;
         private ContentManager contentManager;
@@ -41,7 +42,7 @@ namespace ECSRogue.Managers
             this.contentManager = contentManager;
             spriteBatch = new SpriteBatch(graphicsDevice);
 
-            instance = new PartisInstance();
+            partisInstance = new PartisInstance();
 
             ui = new UIHandler(new Vector2(graphicsDevice.Viewport.Width,
                 graphicsDevice.Viewport.Height));
@@ -52,36 +53,37 @@ namespace ECSRogue.Managers
         public void Initialize()
         {
             levelManager = new LevelManager();
+            logManager = new LogManager();
 
             //initialize partis
-            instance.Initialize();
+            partisInstance.Initialize();
 
             ContentDefinitionLoader s = new ContentDefinitionLoader(contentManager);
             EntityDefinitionLoader e = new EntityDefinitionLoader(s.LoadSpriteDefinitions("test"));
 
-            instance.Load(e.LoadEntityDefinitions("Test"));
-            var player = instance.CreateEntity("Player");
-            var camera = instance.CreateEntity("Camera");
+            partisInstance.Load(e.LoadEntityDefinitions("Test"));
+            var player = partisInstance.CreateEntity("Player");
+            var camera = partisInstance.CreateEntity("Camera");
 
             //initialize renderer
             render.Initialize(new List<IRenderProcessor>()
                 {new EntityRenderProcessor(), new UIRenderProcessor(graphicsDevice)});
 
-            instance.AddSystem(new MonsterAISystem(levelManager));
-            instance.AddSystem(new MovementSystem());
-            instance.AddSystem(new CameraInputSystem());
-            instance.AddSystem(new PhysicsSystem());
-            instance.AddSystem(new CombatSystem());
-            instance.AddSystem(new EquipmentSystem());
-            instance.AddSystem(new InventorySystem());
-            instance.AddSystem(new DoorSystem());
-            instance.AddSystem(new DamageSystem());
-            instance.AddSystem(new RenderSystem(render, levelManager));
-            instance.AddSystem(new TurnSystem());
-            instance.AddSystem(new LevelChangeSystem(levelManager));
+            partisInstance.AddSystem(new MonsterAISystem(levelManager));
+            partisInstance.AddSystem(new MovementSystem());
+            partisInstance.AddSystem(new CameraInputSystem());
+            partisInstance.AddSystem(new PhysicsSystem());
+            partisInstance.AddSystem(new CombatSystem());
+            partisInstance.AddSystem(new EquipmentSystem());
+            partisInstance.AddSystem(new InventorySystem());
+            partisInstance.AddSystem(new DoorSystem());
+            partisInstance.AddSystem(new DamageSystem());
+            partisInstance.AddSystem(new RenderSystem(render, levelManager));
+            partisInstance.AddSystem(new TurnSystem());
+            partisInstance.AddSystem(new LevelChangeSystem(levelManager));
 
             //initialize ui
-            ui.Initialize(instance, render.GetRenderProcessor<UIRenderProcessor>(),
+            ui.Initialize(this, render.GetRenderProcessor<UIRenderProcessor>(),
                 contentManager.Load<SpriteFont>("spritefont"));
 
 
@@ -93,7 +95,7 @@ namespace ECSRogue.Managers
 
         public void TestInstance()
         {
-            levelManager.GenerateLevel(0, new DungeonLevelFactory(new Random()), instance);
+            levelManager.GenerateLevel(0, new DungeonLevelFactory(new Random()), partisInstance);
             //ui.CreateDefaultUI();
         }
 
@@ -105,11 +107,11 @@ namespace ECSRogue.Managers
                 Test = true;
             }
 
-
-            input.Update(gameTime, instance);
-            ui.Update(instance);
-            render.Draw(gameTime, instance);
-            instance.Update();
+            logManager.Update(partisInstance);
+            input.Update(gameTime, partisInstance);
+            ui.Update(partisInstance);
+            render.Draw(gameTime, partisInstance);
+            partisInstance.Update();
         }
     }
 }

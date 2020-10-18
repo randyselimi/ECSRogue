@@ -45,13 +45,13 @@ namespace ECSRogue.Managers.Events
     //Used to couple systems together
     public interface IEvent
     {
-        //public int lifetime { get; set; }
+        public int lifetime { get; set; }
     }
 
     //Event regarding game logic, entities, and systems
-    public class GameEvent : IEvent
+    public abstract class GameEvent : IEvent
     {
-        public int lifetime;
+        public int lifetime { get; set; }
         public GameEvents EventType { get; }
 
         protected GameEvent(GameEvents eventType)
@@ -60,6 +60,18 @@ namespace ECSRogue.Managers.Events
         }
 
         //public int lifetime { get; set; } = 0;
+    }
+
+    public class LogEvent : IEvent
+    {
+        public int lifetime { get; set; }
+
+        public string LogMessage { get; set; }
+
+        public LogEvent(string logMessage)
+        {
+            LogMessage = logMessage;
+        }
     }
 
     //probably should split into mouse events and keyboard events

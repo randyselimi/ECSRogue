@@ -22,18 +22,25 @@ namespace ECSRogue.Systems
             {
                 if (gameEvent.EventType == GameEvents.Attack)
                 {
+                    string attackLogMessage = "";
                     var attackEvent = gameEvent as AttackEvent;
 
                     var attacker = attackEvent.AttackingEntity;
                     var defender = instance.GetEntitiesByIndexes(new PositionIndexer(attackEvent.AttackingPosition), new LevelIndexer(attackEvent.AttackingLevel), new TypeIndexer(typeof(Health))).SingleOrDefault();
 
+                    //I know this is a slow and inefficient process
+                    attackLogMessage += attacker.GetComponent<Name>().NameSingular + " attacks ";
                     if (defender != null)
                     {
                         int damage = CalculateDamageDealt(attacker);
                         instance.AddEvent(new DamageEvent(defender, damage));
+                        attackLogMessage += "a " + defender.GetComponent<Name>().NameSingular + " for " + damage + " points of damage";
                     }
+                    else { attackLogMessage += "the air"; }
 
                     attacker.GetComponent<Turn>().takenTurn = true;
+
+                    instance.AddEvent(new LogEvent(attackLogMessage));
                 }
             }
         }

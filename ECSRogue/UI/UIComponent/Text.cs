@@ -8,11 +8,12 @@ namespace ECSRogue.UI.UIComponent
         public string displayText = "test";
         public SpriteFont spriteFont;
 
-        public Text(SpriteFont spriteFont, UIPosition relativePosition, Color color, Vector2? offset = null) : base(
+        public Text(string text, SpriteFont spriteFont, UIPosition relativePosition, Color color, Vector2? offset = null) : base(
             relativePosition, color, offset)
         {
             this.spriteFont = spriteFont;
-            var stringSize = this.spriteFont.MeasureString("Test");
+            displayText = text;
+            dimensions = spriteFont.MeasureString(displayText);
         }
 
         public override void Draw(Texture2D rectangleSprite, SpriteBatch spriteBatch)

@@ -35,16 +35,16 @@ namespace ECSRogue.Managers
             this.screenDimensions = screenDimensions;
         }
 
-        public void Initialize(PartisInstance instance, UIRenderProcessor processor, params SpriteFont[] spriteFonts)
+        public void Initialize(GameInstance gameInstance, UIRenderProcessor processor, params SpriteFont[] spriteFonts)
         {
-            camera = instance.GetEntitiesByIndex(new TypeIndexer(typeof(Camera))).Single();
-            player = instance.GetEntitiesByIndex(new TypeIndexer(typeof(Player))).Single();
+            camera = gameInstance.partisInstance.GetEntitiesByIndex(new TypeIndexer(typeof(Camera))).Single();
+            player = gameInstance.partisInstance.GetEntitiesByIndex(new TypeIndexer(typeof(Player))).Single();
 
             this.spriteFonts = spriteFonts.ToList();
 
             renderProcessor = processor;
 
-            CreateDefaultUI(instance);
+            CreateDefaultUI(gameInstance);
         }
 
         //Lots of logic in this should be encapsulated and extracted from this update function
@@ -103,10 +103,11 @@ namespace ECSRogue.Managers
             }
         }
 
-        public void CreateDefaultUI(PartisInstance instance)
+        public void CreateDefaultUI(GameInstance gameInstance)
         {
             AddUIElement(new StatusBar(player, screenPosition,
                 screenDimensions, spriteFonts[0]));
+            AddUIElement(new GameLog(gameInstance.logManager, screenPosition, screenDimensions, spriteFonts[0]));
         }
 
         //temporary implementation

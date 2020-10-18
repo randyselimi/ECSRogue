@@ -30,14 +30,13 @@ namespace ECSRogue.UI.UIElement
             baseComponent.AddChild(orderedList);
 
 
-            name = new Text(spriteFont, UIPosition.TopLeft, Color.Black);
-            name.displayText = "Randy";
+            name = new Text("Randy", spriteFont, UIPosition.TopLeft, Color.Black);
             orderedList.AddChild(name);
 
-            health = new Text(spriteFont, UIPosition.TopLeft, Color.Black);
+            health = new Text("HP: ", spriteFont, UIPosition.TopLeft, Color.Black);
             orderedList.AddChild(health);
 
-            equippedWeapon = new Text(spriteFont, UIPosition.TopLeft, Color.Black);
+            equippedWeapon = new Text("None", spriteFont, UIPosition.TopLeft, Color.Black);
             orderedList.AddChild(equippedWeapon);
         }
 

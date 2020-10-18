@@ -28,8 +28,7 @@ namespace ECSRogue.UI.UIElement
             baseComponent = container;
             container.absolutePosition = container.GetAbsolutePosition(screenPosition, screenDimensions);
 
-            label = new Text(spriteFont, UIPosition.Top, Color.Black);
-            label.displayText = "Inventory";
+            label = new Text("Inventory", spriteFont, UIPosition.Top, Color.Black);
             baseComponent.AddChild(label);
 
             inventory = new OrderedList(new Vector2(0, 40), baseComponent.dimensions, UIPosition.TopLeft, Color.Black);

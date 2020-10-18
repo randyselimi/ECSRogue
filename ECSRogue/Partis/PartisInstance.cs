@@ -15,7 +15,7 @@ namespace ECSRogue.Partis
         private EntityManager entityManager = new EntityManager(new EntityFactory(), new ComponentFactory());
         private SystemManager systemManager = new SystemManager();
         private EventManager eventManager = new EventManager(new List<IEventProcessor>()
-            {new GameEventProcessor(), new UIEventProcessor()});
+            {new GameEventProcessor(), new UIEventProcessor(), new LogEventProcessor()});
 
         //Entities
         public Dictionary<int, Entity>.ValueCollection GetEntitiesByIndex(IComponentIndexer indexer)
@@ -61,6 +61,7 @@ namespace ECSRogue.Partis
         }
         public void Update()
         {
+
             entityManager.Update();
             systemManager.Update(this);
             eventManager.Update();
